@@ -1,1 +1,1 @@
-Add wrangler.jsonc with correct OpenNext configuration
+Add OpenNext Cloudflare configuration files
