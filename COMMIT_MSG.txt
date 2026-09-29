@@ -1,1 +1,1 @@
-Remove manual wrangler.jsonc - let OpenNext generate correct config
+Add wrangler.jsonc with correct OpenNext configuration
