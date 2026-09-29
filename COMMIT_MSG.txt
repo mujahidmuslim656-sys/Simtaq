@@ -1,1 +1,1 @@
-Upgrade Next.js to 14.2.35 for Cloudflare Pages compatibility
+Upgrade Next.js to 16.3.6 for Cloudflare Workers compatibility
