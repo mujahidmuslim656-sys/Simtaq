@@ -185,10 +185,10 @@ export default function AbsensiPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Absensi</h1>
-          <p className="text-gray-500">Catat kehadiran santri</p>
+      <div className="p-4 md:p-6">
+        <div className="mb-4 md:mb-6">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Absensi</h1>
+          <p className="text-sm text-gray-500">Catat kehadiran santri</p>
         </div>
 
         {message && (
@@ -204,7 +204,7 @@ export default function AbsensiPage() {
         )}
 
         <Card>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Kelas
@@ -212,7 +212,7 @@ export default function AbsensiPage() {
               <select
                 value={selectedKelas}
                 onChange={(e) => setSelectedKelas(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               >
                 <option value="">Pilih Kelas</option>
                 {kelasList.map((kelas) => (
@@ -230,7 +230,7 @@ export default function AbsensiPage() {
                 type="date"
                 value={selectedTanggal}
                 onChange={(e) => setSelectedTanggal(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               />
             </div>
           </div>
@@ -316,7 +316,7 @@ export default function AbsensiPage() {
                     className="border border-gray-200 rounded-lg p-4"
                   >
                     <h3 className="font-medium text-gray-900 mb-3">{form.nama}</h3>
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <div className="grid grid-cols-2 gap-2 mb-3">
                       {(["Hadir", "Izin", "Sakit", "Alpa"] as AbsensiStatus[]).map(
                         (status) => (
                           <button
@@ -324,7 +324,7 @@ export default function AbsensiPage() {
                             onClick={() =>
                               handleStatusChange(form.santriId, status)
                             }
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                            className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                               form.status === status
                                 ? status === "Hadir"
                                   ? "bg-green-100 text-green-800 ring-2 ring-green-500"
@@ -348,14 +348,14 @@ export default function AbsensiPage() {
                         handleCatatanChange(form.santriId, e.target.value)
                       }
                       placeholder="Catatan (opsional)"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                      className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="mt-6 flex justify-end">
-                <Button onClick={handleSave} loading={saving}>
+              <div className="mt-4 md:mt-6 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+                <Button onClick={handleSave} loading={saving} className="w-full sm:w-auto">
                   Simpan Absensi
                 </Button>
               </div>

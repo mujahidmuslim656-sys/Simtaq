@@ -165,13 +165,13 @@ export default function CatatanPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Catatan Guru</h1>
-            <p className="text-gray-500">Catatan untuk santri</p>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Catatan Guru</h1>
+            <p className="text-sm text-gray-500">Catatan untuk santri</p>
           </div>
-          <Button onClick={openCreateModal} className="mt-4 sm:mt-0">
+          <Button onClick={openCreateModal} className="mt-3 sm:mt-0 w-full sm:w-auto">
             + Tambah Catatan
           </Button>
         </div>
@@ -300,7 +300,7 @@ export default function CatatanPage() {
               <select
                 value={formData.ID_Santri}
                 onChange={(e) => setFormData({ ...formData, ID_Santri: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 required
               >
                 <option value="">Pilih Santri</option>
@@ -316,29 +316,30 @@ export default function CatatanPage() {
               <textarea
                 value={formData.Catatan}
                 onChange={(e) => setFormData({ ...formData, Catatan: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 rows={4}
                 placeholder="Tulis catatan untuk santri..."
                 required
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <input
                 type="checkbox"
                 id="tampilKeWali"
                 checked={formData.Tampil_Ke_Wali}
                 onChange={(e) => setFormData({ ...formData, Tampil_Ke_Wali: e.target.checked })}
-                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
               />
               <label htmlFor="tampilKeWali" className="text-sm text-gray-700">
                 Tampilkan ke Orang Tua/Wali
               </label>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
               <Button
                 type="button"
                 variant="secondary"
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingCatatan(null);
@@ -346,7 +347,7 @@ export default function CatatanPage() {
               >
                 Batal
               </Button>
-              <Button type="submit" loading={saving}>
+              <Button type="submit" loading={saving} className="w-full sm:w-auto">
                 {editingCatatan ? "Simpan Perubahan" : "Tambah"}
               </Button>
             </div>

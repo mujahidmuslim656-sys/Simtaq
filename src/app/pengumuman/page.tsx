@@ -185,13 +185,13 @@ export default function PengumumanPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Pengumuman</h1>
-            <p className="text-gray-500">Kelola pengumuman TPQ</p>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Pengumuman</h1>
+            <p className="text-sm text-gray-500">Kelola pengumuman TPQ</p>
           </div>
-          <Button onClick={openCreateModal} className="mt-4 sm:mt-0">
+          <Button onClick={openCreateModal} className="mt-3 sm:mt-0 w-full sm:w-auto">
             + Tambah Pengumuman
           </Button>
         </div>
@@ -325,7 +325,7 @@ export default function PengumumanPage() {
                 type="text"
                 value={formData.Judul}
                 onChange={(e) => setFormData({ ...formData, Judul: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 placeholder="Judul pengumuman"
                 required
               />
@@ -335,20 +335,20 @@ export default function PengumumanPage() {
               <textarea
                 value={formData.Isi}
                 onChange={(e) => setFormData({ ...formData, Isi: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 rows={4}
                 placeholder="Isi pengumuman..."
                 required
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Publish</label>
                 <input
                   type="date"
                   value={formData.Tanggal_Publish}
                   onChange={(e) => setFormData({ ...formData, Tanggal_Publish: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   required
                 />
               </div>
@@ -358,7 +358,7 @@ export default function PengumumanPage() {
                   type="date"
                   value={formData.Tanggal_Expired}
                   onChange={(e) => setFormData({ ...formData, Tanggal_Expired: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
               </div>
             </div>
@@ -367,17 +367,18 @@ export default function PengumumanPage() {
               <select
                 value={formData.Status}
                 onChange={(e) => setFormData({ ...formData, Status: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               >
                 <option value="Aktif">Aktif</option>
                 <option value="Nonaktif">Nonaktif</option>
               </select>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
               <Button
                 type="button"
                 variant="secondary"
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingPengumuman(null);
@@ -385,7 +386,7 @@ export default function PengumumanPage() {
               >
                 Batal
               </Button>
-              <Button type="submit" loading={saving}>
+              <Button type="submit" loading={saving} className="w-full sm:w-auto">
                 {editingPengumuman ? "Simpan Perubahan" : "Tambah"}
               </Button>
             </div>

@@ -62,7 +62,7 @@ export default function DashboardPage() {
           <p className="text-gray-500">Selamat datang di TPQ Digital</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
           <Card>
             <div className="flex items-center">
               <div className="p-3 bg-blue-100 rounded-lg">
@@ -106,7 +106,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           <Button
             variant="secondary"
             className="justify-start h-auto py-4"

@@ -201,13 +201,13 @@ export default function HafalanPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Hafalan</h1>
-            <p className="text-gray-500">Catat hafalan santri</p>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Hafalan</h1>
+            <p className="text-sm text-gray-500">Catat hafalan santri</p>
           </div>
-          <Button onClick={openCreateModal} className="mt-4 sm:mt-0">
+          <Button onClick={openCreateModal} className="mt-3 sm:mt-0 w-full sm:w-auto">
             + Tambah Hafalan
           </Button>
         </div>
@@ -341,7 +341,7 @@ export default function HafalanPage() {
               <select
                 value={formData.ID_Santri}
                 onChange={(e) => setFormData({ ...formData, ID_Santri: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 required
               >
                 <option value="">Pilih Santri</option>
@@ -357,7 +357,7 @@ export default function HafalanPage() {
               <select
                 value={formData.Surah}
                 onChange={(e) => setFormData({ ...formData, Surah: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               >
                 {SURAH_OPTIONS.map((surah) => (
                   <option key={surah} value={surah}>
@@ -371,7 +371,7 @@ export default function HafalanPage() {
               <select
                 value={formData.Status}
                 onChange={(e) => setFormData({ ...formData, Status: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               >
                 {STATUS_OPTIONS.map((status) => (
                   <option key={status} value={status}>
@@ -385,16 +385,17 @@ export default function HafalanPage() {
               <textarea
                 value={formData.Catatan}
                 onChange={(e) => setFormData({ ...formData, Catatan: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 rows={3}
                 placeholder="Catatan hafalan..."
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
               <Button
                 type="button"
                 variant="secondary"
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingHafalan(null);
@@ -402,7 +403,7 @@ export default function HafalanPage() {
               >
                 Batal
               </Button>
-              <Button type="submit" loading={saving}>
+              <Button type="submit" loading={saving} className="w-full sm:w-auto">
                 {editingHafalan ? "Simpan Perubahan" : "Tambah"}
               </Button>
             </div>

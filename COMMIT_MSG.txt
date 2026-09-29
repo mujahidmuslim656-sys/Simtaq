@@ -1,1 +1,1 @@
-Add OpenNext Cloudflare configuration files
+Force rebuild with fresh cache

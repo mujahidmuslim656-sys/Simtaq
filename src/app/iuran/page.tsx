@@ -194,13 +194,13 @@ export default function IuranPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Iuran</h1>
-            <p className="text-gray-500">Kelola iuran santri</p>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Iuran</h1>
+            <p className="text-sm text-gray-500">Kelola iuran santri</p>
           </div>
-          <Button onClick={openCreateModal} className="mt-4 sm:mt-0">
+          <Button onClick={openCreateModal} className="mt-3 sm:mt-0 w-full sm:w-auto">
             + Tambah Iuran
           </Button>
         </div>
@@ -388,7 +388,7 @@ export default function IuranPage() {
               <select
                 value={formData.ID_Santri}
                 onChange={(e) => setFormData({ ...formData, ID_Santri: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 required
               >
                 <option value="">Pilih Santri</option>
@@ -399,14 +399,14 @@ export default function IuranPage() {
                 ))}
               </select>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bulan</label>
                 <input
                   type="text"
                   value={formData.Bulan}
                   onChange={(e) => setFormData({ ...formData, Bulan: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   placeholder="Contoh: Januari 2024"
                   required
                 />
@@ -416,7 +416,7 @@ export default function IuranPage() {
                 <select
                   value={formData.Jenis}
                   onChange={(e) => setFormData({ ...formData, Jenis: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 >
                   <option value="SPP">SPP</option>
                   <option value="Infaq">Infaq</option>
@@ -424,14 +424,14 @@ export default function IuranPage() {
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
                 <input
                   type="number"
                   value={formData.Nominal}
                   onChange={(e) => setFormData({ ...formData, Nominal: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   placeholder="25000"
                   required
                   min="0"
@@ -442,7 +442,7 @@ export default function IuranPage() {
                 <select
                   value={formData.Status}
                   onChange={(e) => setFormData({ ...formData, Status: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 >
                   <option value="Belum Bayar">Belum Bayar</option>
                   <option value="Lunas">Lunas</option>
@@ -456,7 +456,7 @@ export default function IuranPage() {
                   type="date"
                   value={formData.Tanggal_Bayar}
                   onChange={(e) => setFormData({ ...formData, Tanggal_Bayar: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
               </div>
             )}
@@ -465,16 +465,17 @@ export default function IuranPage() {
               <textarea
                 value={formData.Catatan}
                 onChange={(e) => setFormData({ ...formData, Catatan: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 rows={2}
                 placeholder="Catatan (opsional)..."
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4">
               <Button
                 type="button"
                 variant="secondary"
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setIsModalOpen(false);
                   setEditingIuran(null);
@@ -482,7 +483,7 @@ export default function IuranPage() {
               >
                 Batal
               </Button>
-              <Button type="submit" loading={saving}>
+              <Button type="submit" loading={saving} className="w-full sm:w-auto">
                 {editingIuran ? "Simpan Perubahan" : "Tambah"}
               </Button>
             </div>
