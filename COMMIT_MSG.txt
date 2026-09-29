@@ -1,1 +1,1 @@
-Fix wrangler.jsonc - remove unnecessary service binding
+Remove manual wrangler.jsonc - let OpenNext generate correct config
