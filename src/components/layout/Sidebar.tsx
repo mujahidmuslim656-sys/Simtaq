@@ -127,7 +127,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="p-4 md:p-6 border-b border-gray-200 flex items-center justify-between">
-          <h1 className="text-lg md:text-xl font-bold text-primary-600">TPQ Digital</h1>
+          <h1 className="text-lg md:text-xl font-bold text-primary-600">Simtaq</h1>
           <button
             onClick={onClose}
             className="md:hidden p-2 text-gray-500 hover:text-gray-700 min-h-[44px] min-w-[44px] flex items-center justify-center"

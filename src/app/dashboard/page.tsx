@@ -59,7 +59,7 @@ export default function DashboardPage() {
       <div className="p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500">Selamat datang di TPQ Digital</p>
+          <p className="text-gray-500">Selamat datang di Simtaq</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">

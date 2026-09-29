@@ -21,7 +21,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h2 className="text-base md:text-lg font-semibold text-gray-900">TPQ Digital</h2>
+          <h2 className="text-base md:text-lg font-semibold text-gray-900">Simtaq</h2>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           <button

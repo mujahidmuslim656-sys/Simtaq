@@ -96,7 +96,7 @@ export default function Home() {
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">TPQ</span>
               </div>
-              <span className="ml-2 text-lg md:text-xl font-bold text-gray-900">TPQ Digital</span>
+              <span className="ml-2 text-lg md:text-xl font-bold text-gray-900">Simtaq</span>
             </div>
             <Button onClick={() => router.push("/login")} size="md">
               Masuk
@@ -110,10 +110,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32">
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
-              Sistem Informasi TPQ
+              Simtaq
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-primary-100 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-              Kelola data santri, guru, absensi, hafalan, dan iuran TPQ secara digital, terpusat, dan mudah diakses.
+              Sistem Informasi Manajemen Taman Pengajian Al-Quran. Kelola data santri, guru, absensi, hafalan, dan iuran secara digital, terpusat, dan mudah diakses.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
@@ -192,7 +192,7 @@ export default function Home() {
             Siap Memulai?
           </h2>
           <p className="text-sm sm:text-base text-primary-100 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-            Masuk ke dashboard untuk mulai mengelola data TPQ Anda secara digital
+            Masuk ke dashboard untuk mulai mengelola data Taman Pengajian Al-Quran Anda secara digital
           </p>
           <Button
             variant="secondary"
@@ -213,7 +213,7 @@ export default function Home() {
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">TPQ</span>
               </div>
-              <span className="ml-2 text-base md:text-lg font-bold text-white">TPQ Digital</span>
+              <span className="ml-2 text-base md:text-lg font-bold text-white">Simtaq</span>
             </div>
             <p className="text-sm text-center md:text-right">
               &copy; {new Date().getFullYear()} TPQ Digital. All rights reserved.

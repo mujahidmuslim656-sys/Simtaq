@@ -1,6 +1,6 @@
-# TPQ Digital MVP
+# Simtaq (Sistem Informasi Manajemen Taman Pengajian Al-Quran)
 
-Sistem Informasi TPQ Digital dengan Google Sheets sebagai database.
+Sistem Informasi Manajemen Taman Pengajian Al-Quran dengan Google Sheets sebagai database.
 
 ## Fitur yang Sudah Dibuat
 
