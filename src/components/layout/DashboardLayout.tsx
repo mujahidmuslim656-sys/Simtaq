@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -11,6 +11,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn");
@@ -21,9 +22,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
+      <Sidebar isOpen={isOpen} onClose={() => setIsOpen(false)} />
       <div className="pl-64">
-        <Header />
+        <Header onMenuClick={() => setIsOpen(true)} />
         <main className="p-6">{children}</main>
       </div>
     </div>
