@@ -1,1 +1,1 @@
-Initial commit - TPQ Digital MVP
+Upgrade Next.js to 14.2.35 for Cloudflare Pages compatibility
