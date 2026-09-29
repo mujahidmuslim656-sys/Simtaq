@@ -1,1 +1,1 @@
-Upgrade Next.js to 16.3.6 for Cloudflare Workers compatibility
+Fix wrangler.jsonc - remove unnecessary service binding
