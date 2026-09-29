@@ -74,6 +74,39 @@ const stats = [
   { label: "Tahun Berdiri", value: "2020" },
 ];
 
+const plans = [
+  {
+    name: "Free",
+    price: "Gratis",
+    description: "Untuk TPQ kecil yang baru memulai",
+    features: [
+      "10 santri",
+      "3 guru",
+      "1 kelas",
+      "Semua fitur dasar",
+      "Support via email",
+    ],
+    cta: "Daftar Gratis",
+    popular: false,
+  },
+  {
+    name: "Pro",
+    price: "Rp 49.000",
+    period: "/bulan",
+    description: "Untuk TPQ yang berkembang",
+    features: [
+      "100 santri",
+      "20 guru",
+      "5 kelas",
+      "Semua fitur dasar",
+      "Prioritas support",
+      "Backup data berkala",
+    ],
+    cta: "Upgrade ke Pro",
+    popular: true,
+  },
+];
+
 const colorClasses: Record<string, { bg: string; text: string }> = {
   blue: { bg: "bg-blue-50", text: "text-blue-600" },
   green: { bg: "bg-green-50", text: "text-green-600" },
@@ -93,12 +126,20 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-18">
             <Logo size="md" />
-            <button
-              onClick={() => router.push("/login")}
-              className="px-5 py-2.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 min-h-[44px]"
-            >
-              Masuk
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push("/login")}
+                className="px-5 py-2.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 min-h-[44px]"
+              >
+                Masuk
+              </button>
+              <button
+                onClick={() => router.push("/register")}
+                className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 rounded-lg shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 min-h-[44px]"
+              >
+                Daftar
+              </button>
+            </div>
           </div>
         </div>
       </nav>
@@ -128,10 +169,10 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
-                onClick={() => router.push("/login")}
+                onClick={() => router.push("/register")}
                 className="px-8 py-4 text-base font-semibold text-primary-900 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 focus:ring-offset-primary-800 min-h-[48px]"
               >
-                Mulai Sekarang
+                Daftar Gratis
               </button>
               <button
                 onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
@@ -215,6 +256,76 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-16 md:py-20 lg:py-28 bg-gray-50 relative">
+        <IslamicPattern variant="dark" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 md:mb-14">
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-gold-700 bg-gold-50 rounded-full border border-gold-200 mb-3 md:mb-4">
+              Harga Terjangkau
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+              Pilih Paket yang Sesuai
+            </h2>
+            <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto">
+              Mulai gratis, upgrade kapan saja sesuai kebutuhan TPQ Anda
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+            {plans.map((plan) => (
+              <div
+                key={plan.name}
+                className={`relative bg-white rounded-2xl p-6 md:p-8 shadow-sm border-2 transition-all duration-300 hover:shadow-lg ${
+                  plan.popular
+                    ? "border-gold-400 hover:border-gold-500"
+                    : "border-gray-200 hover:border-primary-300"
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-gradient-to-r from-gold-500 to-gold-600 text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-md">
+                      PALING POPULER
+                    </span>
+                  </div>
+                )}
+
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-3xl md:text-4xl font-bold text-primary-600">{plan.price}</span>
+                    {plan.period && <span className="text-gray-500">{plan.period}</span>}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">{plan.description}</p>
+                </div>
+
+                <ul className="space-y-3 mb-8">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-center gap-3">
+                      <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => router.push(plan.popular ? "/register" : "/register")}
+                  className={`w-full py-3.5 text-base font-semibold rounded-xl shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[48px] ${
+                    plan.popular
+                      ? "text-white bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 focus:ring-gold-400"
+                      : "text-primary-700 bg-primary-50 hover:bg-primary-100 focus:ring-primary-500"
+                  }`}
+                >
+                  {plan.cta}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="relative bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 py-16 md:py-20 overflow-hidden">
         <div className="absolute inset-0 pattern-islamic opacity-30" />
@@ -223,13 +334,13 @@ export default function Home() {
             Siap Memulai?
           </h2>
           <p className="text-base md:text-lg text-primary-800/80 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
-            Masuk ke dashboard untuk mulai mengelola data Taman Pengajian Al-Quran Anda secara digital
+            Daftarkan TPQ Anda sekarang dan mulai kelola data secara digital
           </p>
           <button
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/register")}
             className="px-8 py-4 text-base font-semibold text-white bg-primary-700 hover:bg-primary-800 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gold-400 min-h-[48px]"
           >
-            Masuk Sekarang
+            Daftar Sekarang
           </button>
         </div>
       </section>
