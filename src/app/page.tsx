@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
+import Logo from "@/components/Logo";
+import IslamicPattern from "@/components/IslamicPattern";
 
 const features = [
   {
@@ -75,12 +75,12 @@ const stats = [
 ];
 
 const colorClasses: Record<string, { bg: string; text: string }> = {
-  blue: { bg: "bg-blue-100", text: "text-blue-600" },
-  green: { bg: "bg-green-100", text: "text-green-600" },
-  purple: { bg: "bg-purple-100", text: "text-purple-600" },
-  yellow: { bg: "bg-yellow-100", text: "text-yellow-600" },
-  red: { bg: "bg-red-100", text: "text-red-600" },
-  indigo: { bg: "bg-indigo-100", text: "text-indigo-600" },
+  blue: { bg: "bg-blue-50", text: "text-blue-600" },
+  green: { bg: "bg-green-50", text: "text-green-600" },
+  purple: { bg: "bg-purple-50", text: "text-purple-600" },
+  yellow: { bg: "bg-yellow-50", text: "text-yellow-600" },
+  red: { bg: "bg-red-50", text: "text-red-600" },
+  indigo: { bg: "bg-indigo-50", text: "text-indigo-600" },
 };
 
 export default function Home() {
@@ -89,73 +89,102 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navbar */}
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
+      <nav className="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 md:h-16">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TPQ</span>
-              </div>
-              <span className="ml-2 text-lg md:text-xl font-bold text-gray-900">Simtaq</span>
-            </div>
-            <Button onClick={() => router.push("/login")} size="md">
+          <div className="flex justify-between items-center h-16 md:h-18">
+            <Logo size="md" />
+            <button
+              onClick={() => router.push("/login")}
+              className="px-5 py-2.5 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 min-h-[44px]"
+            >
               Masuk
-            </Button>
+            </button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-600 to-primary-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 lg:py-32">
+      <section className="relative bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900 text-white overflow-hidden">
+        <IslamicPattern variant="light" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-900/50 to-transparent" />
+
+        {/* Floating decorative elements */}
+        <div className="absolute top-20 left-10 w-16 h-16 bg-gold-400/10 rounded-full blur-xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-24 h-24 bg-gold-400/10 rounded-full blur-xl animate-float-slow" />
+        <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-white/5 rounded-full animate-float" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 lg:py-36">
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
-              Simtaq
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6 md:mb-8">
+              <span className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-primary-100">Sistem Informasi Manajemen TPQ</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
+              Sim<span className="text-gold-400">taq</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-primary-100 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-primary-100 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
               Sistem Informasi Manajemen Taman Pengajian Al-Quran. Kelola data santri, guru, absensi, hafalan, dan iuran secara digital, terpusat, dan mudah diakses.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button
-                variant="secondary"
-                size="lg"
-                className="bg-white text-primary-600 hover:bg-gray-100 w-full sm:w-auto"
+              <button
                 onClick={() => router.push("/login")}
+                className="px-8 py-4 text-base font-semibold text-primary-900 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-2 focus:ring-offset-primary-800 min-h-[48px]"
               >
-                Masuk ke Dashboard
-              </Button>
+                Mulai Sekarang
+              </button>
+              <button
+                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+                className="px-8 py-4 text-base font-semibold text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-primary-800 min-h-[48px]"
+              >
+                Lihat Fitur
+              </button>
             </div>
           </div>
+        </div>
+
+        {/* Bottom wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f9fafb"/>
+          </svg>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-12 md:py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 md:mb-12">
+      <section id="features" className="py-16 md:py-20 lg:py-28 bg-gray-50 relative">
+        <IslamicPattern variant="dark" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 md:mb-14">
+            <span className="inline-block px-3 py-1 text-xs font-semibold text-gold-700 bg-gold-50 rounded-full border border-gold-200 mb-3 md:mb-4">
+              Fitur Unggulan
+            </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
               Fitur Lengkap
             </h2>
-            <p className="text-sm sm:text-base text-gray-500 max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto">
               Semua yang Anda butuhkan untuk mengelola TPQ secara digital
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
             {features.map((feature) => {
               const colors = colorClasses[feature.color];
               return (
-                <Card key={feature.title} className="p-4 md:p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <div className={`p-2.5 md:p-3 ${colors.bg} rounded-lg ${colors.text} shrink-0`}>
+                <div
+                  key={feature.title}
+                  className="group bg-white rounded-xl p-5 md:p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gold-200 transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={`p-3 ${colors.bg} rounded-lg ${colors.text} shrink-0 group-hover:scale-110 transition-transform`}>
                       {feature.icon}
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-base md:text-lg font-semibold text-gray-900">{feature.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1 leading-relaxed">{feature.description}</p>
+                      <p className="text-sm md:text-base text-gray-500 mt-1 leading-relaxed">{feature.description}</p>
                     </div>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
@@ -163,22 +192,23 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-white py-12 md:py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+      <section className="relative bg-gradient-to-br from-primary-800 to-primary-900 py-16 md:py-20 lg:py-24 overflow-hidden">
+        <IslamicPattern variant="light" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
               Statistik Kami
             </h2>
-            <p className="text-sm sm:text-base text-gray-500">Pencapaian dan pertumbuhan TPQ kami</p>
+            <p className="text-base md:text-lg text-primary-200">Pencapaian dan pertumbuhan TPQ kami</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary-600 mb-1 md:mb-2">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gold-400 mb-2">
                   {stat.value}
                 </div>
-                <div className="text-sm sm:text-base text-gray-500">{stat.label}</div>
+                <div className="text-sm sm:text-base text-primary-200">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -186,35 +216,29 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-primary-600 text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4">
+      <section className="relative bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 py-16 md:py-20 overflow-hidden">
+        <div className="absolute inset-0 pattern-islamic opacity-30" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-900 mb-3 md:mb-4">
             Siap Memulai?
           </h2>
-          <p className="text-sm sm:text-base text-primary-100 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-primary-800/80 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
             Masuk ke dashboard untuk mulai mengelola data Taman Pengajian Al-Quran Anda secara digital
           </p>
-          <Button
-            variant="secondary"
-            size="lg"
-            className="bg-white text-primary-600 hover:bg-gray-100 w-full sm:w-auto"
+          <button
             onClick={() => router.push("/login")}
+            className="px-8 py-4 text-base font-semibold text-white bg-primary-700 hover:bg-primary-800 rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gold-400 min-h-[48px]"
           >
             Masuk Sekarang
-          </Button>
+          </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-6 md:py-8">
+      <footer className="bg-gray-900 text-gray-400 py-8 md:py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TPQ</span>
-              </div>
-              <span className="ml-2 text-base md:text-lg font-bold text-white">Simtaq</span>
-            </div>
+            <Logo size="md" className="[&>span]:text-white" />
             <p className="text-sm text-center md:text-right">
               &copy; {new Date().getFullYear()} TPQ Digital. All rights reserved.
             </p>
