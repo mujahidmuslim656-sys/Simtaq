@@ -68,18 +68,12 @@ async function callAppsScript(
 
     const options: RequestInit = {
       method,
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      headers: { "Content-Type": "application/json" },
     };
 
     if (method === "POST") {
-      const formData = new URLSearchParams();
-      formData.append("action", params.action || "");
-      Object.entries(body).forEach(([key, value]) => {
-        if (key !== "action") {
-          formData.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
-        }
-      });
-      options.body = formData.toString();
+      const payload = { action: params.action || "", ...body };
+      options.body = JSON.stringify(payload);
     }
 
     const response = await fetch(url, options);
