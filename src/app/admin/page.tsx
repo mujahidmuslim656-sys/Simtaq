@@ -8,6 +8,9 @@ import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import PageHeader from "@/components/ui/PageHeader";
+import Modal from "@/components/ui/Modal";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 
 interface Tenant {
@@ -43,6 +46,17 @@ export default function AdminPage() {
   });
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+  const [formData, setFormData] = useState({
+    Nama_TPQ: "",
+    Nama_Penanggung_Jawab: "",
+    Email: "",
+    Paket: "free",
+    Status: "active",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     checkAuth();
@@ -101,6 +115,60 @@ export default function AdminPage() {
       console.error("Failed to verify payment:", error);
     } finally {
       setVerifying(null);
+    }
+  };
+
+  const handleEditTenant = (tenant: Tenant) => {
+    setEditingTenant(tenant);
+    setFormData({
+      Nama_TPQ: tenant.Nama_TPQ || "",
+      Nama_Penanggung_Jawab: tenant.Nama_Penanggung_Jawab || "",
+      Email: tenant.Email || "",
+      Paket: tenant.Paket || "free",
+      Status: tenant.Status || "active",
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteTenant = async (tenantId: string) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus TPQ ini? Semua data akan dihapus.")) return;
+    try {
+      const response = await fetch(`/api/admin/tenants/${tenantId}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      if (data.success) {
+        loadData();
+      }
+    } catch (error) {
+      console.error("Failed to delete tenant:", error);
+    }
+  };
+
+  const handleSaveTenant = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch(`/api/admin/tenants/${editingTenant?.Tenant_ID}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setIsModalOpen(false);
+        setEditingTenant(null);
+        loadData();
+      } else {
+        setError(data.message || "Gagal menyimpan data");
+      }
+    } catch {
+      setError("Terjadi kesalahan. Silakan coba lagi.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -242,6 +310,7 @@ export default function AdminPage() {
                 <TableHead>Paket</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Terdaftar</TableHead>
+                <TableHead>Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -265,6 +334,16 @@ export default function AdminPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>{new Date(tenant.Created_At).toLocaleDateString("id-ID")}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="ghost" onClick={() => handleEditTenant(tenant)}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="danger" onClick={() => handleDeleteTenant(tenant.Tenant_ID)}>
+                        Hapus
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -347,6 +426,43 @@ export default function AdminPage() {
           <p className="text-gray-500">Belum ada pembayaran</p>
         </div>
       )}
+
+      {/* Edit Tenant Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setEditingTenant(null); }}
+        title="Edit Tenant"
+      >
+        <form onSubmit={handleSaveTenant} className="space-y-4">
+          <Input label="Nama TPQ" value={formData.Nama_TPQ} onChange={(e) => setFormData({ ...formData, Nama_TPQ: e.target.value })} />
+          <Input label="Nama Penanggung Jawab" value={formData.Nama_Penanggung_Jawab} onChange={(e) => setFormData({ ...formData, Nama_Penanggung_Jawab: e.target.value })} />
+          <Input label="Email" type="email" value={formData.Email} onChange={(e) => setFormData({ ...formData, Email: e.target.value })} />
+          <Select label="Paket" value={formData.Paket} onChange={(e) => setFormData({ ...formData, Paket: e.target.value })}>
+            <option value="free">Free</option>
+            <option value="pro">Pro</option>
+          </Select>
+          <Select label="Status" value={formData.Status} onChange={(e) => setFormData({ ...formData, Status: e.target.value })}>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="suspended">Suspended</option>
+          </Select>
+
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-4">
+            <Button type="button" variant="secondary" className="flex-1" onClick={() => { setIsModalOpen(false); setEditingTenant(null); }}>
+              Batal
+            </Button>
+            <Button type="submit" variant="gold" className="flex-1" loading={saving}>
+              Simpan
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </AdminLayout>
   );
 }
