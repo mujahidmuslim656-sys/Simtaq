@@ -17,7 +17,7 @@ export async function getKelasById(id: string): Promise<Kelas | null> {
 
 export async function createKelas(data: KelasFormData): Promise<Kelas> {
   const result = await sheets.createKelas(data as unknown as Record<string, unknown>);
-  return { ID_Kelas: (result as { ID_Kelas: string }).ID_Kelas, ...data };
+  return { ID_Kelas: (result as { ID_Kelas: string }).ID_Kelas, ...data, Status: data.Status as "Aktif" | "Nonaktif" };
 }
 
 export async function updateKelas(

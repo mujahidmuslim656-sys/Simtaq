@@ -20,6 +20,7 @@ export async function createGuru(data: GuruFormData): Promise<Guru> {
   return {
     ID_Guru: (result as { ID_Guru: string }).ID_Guru,
     ...data,
+    Status: data.Status as "Aktif" | "Nonaktif",
     Created_At: new Date().toISOString(),
   };
 }

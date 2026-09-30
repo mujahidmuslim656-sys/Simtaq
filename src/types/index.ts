@@ -119,19 +119,19 @@ export interface ApiResponse<T> {
 export interface SantriFormData {
   NIS: string;
   Nama: string;
-  Jenis_Kelamin: "L" | "P";
+  Jenis_Kelamin: string;
   Tanggal_Lahir: string;
   Nama_Wali: string;
   No_WA: string;
   ID_Kelas: string;
-  Status: "Aktif" | "Nonaktif";
+  Status: string;
 }
 
 export interface GuruFormData {
   Nama: string;
   No_WA: string;
   Email: string;
-  Status: "Aktif" | "Nonaktif";
+  Status: string;
 }
 
 export interface KelasFormData {
@@ -139,5 +139,5 @@ export interface KelasFormData {
   ID_Guru: string;
   Hari: string;
   Jam: string;
-  Status: "Aktif" | "Nonaktif";
+  Status: string;
 }

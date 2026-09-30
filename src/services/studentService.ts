@@ -23,6 +23,8 @@ export async function createSantri(data: SantriFormData): Promise<Santri> {
   return {
     ID_Santri: (result as { ID_Santri: string }).ID_Santri,
     ...data,
+    Jenis_Kelamin: data.Jenis_Kelamin as "L" | "P",
+    Status: data.Status as "Aktif" | "Nonaktif",
     Access_Token: (result as { Access_Token: string }).Access_Token || "",
     Created_At: new Date().toISOString(),
     Updated_At: new Date().toISOString(),
