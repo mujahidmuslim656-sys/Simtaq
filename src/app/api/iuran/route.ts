@@ -3,12 +3,20 @@ import * as sheets from "@/services/googleSheets";
 
 export async function GET(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const santriId = searchParams.get("santriId");
     const stats = searchParams.get("stats");
 
     if (stats === "true") {
-      const statsData = await sheets.getIuranStats();
+      const statsData = await sheets.getIuranStats(tenantId);
       return NextResponse.json({ success: true, data: statsData });
     }
 
@@ -19,11 +27,11 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         );
       }
-      const iuran = await sheets.getIuranBySantri(santriId);
+      const iuran = await sheets.getIuranBySantri(tenantId, santriId);
       return NextResponse.json({ success: true, data: iuran });
     }
 
-    const iuran = await sheets.getAllIuran();
+    const iuran = await sheets.getAllIuran(tenantId);
     return NextResponse.json({ success: true, data: iuran });
   } catch (error) {
     console.error("Get iuran error:", error);
@@ -36,6 +44,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const data = await request.json();
 
     if (!data.ID_Santri || !data.Bulan || !data.Jenis || !data.Nominal) {
@@ -60,7 +76,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newIuran = await sheets.createIuran(data);
+    const newIuran = await sheets.createIuran({ ...data, tenant_id: tenantId });
     return NextResponse.json({ success: true, data: newIuran });
   } catch (error) {
     console.error("Create iuran error:", error);
@@ -73,6 +89,14 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id, data } = await request.json();
 
     if (!id) {
@@ -95,6 +119,14 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await request.json();
 
     if (!id) {

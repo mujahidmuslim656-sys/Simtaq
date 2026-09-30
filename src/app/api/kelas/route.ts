@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 
-// GET - Ambil semua kelas
-export async function GET() {
+// GET - Ambil semua kelas (filter by tenant_id)
+export async function GET(request: NextRequest) {
   try {
-    const kelas = await sheets.getAllKelas();
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    const kelas = await sheets.getAllKelas(tenantId);
     return NextResponse.json({ success: true, data: kelas });
   } catch (error) {
     console.error("Get kelas error:", error);
@@ -18,6 +25,14 @@ export async function GET() {
 // POST - Tambah kelas baru
 export async function POST(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const data = await request.json();
 
     // Validasi input
@@ -35,7 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newKelas = await sheets.createKelas(data);
+    const newKelas = await sheets.createKelas({ ...data, tenant_id: tenantId });
     return NextResponse.json({ success: true, data: newKelas });
   } catch (error) {
     console.error("Create kelas error:", error);
@@ -49,6 +64,14 @@ export async function POST(request: NextRequest) {
 // PUT - Update kelas
 export async function PUT(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id, data } = await request.json();
 
     if (!id) {

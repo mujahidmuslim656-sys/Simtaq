@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 
-// GET - Ambil semua guru
-export async function GET() {
+// GET - Ambil semua guru (filter by tenant_id)
+export async function GET(request: NextRequest) {
   try {
-    const guru = await sheets.getAllGuru();
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    const guru = await sheets.getAllGuru(tenantId);
     return NextResponse.json({ success: true, data: guru });
   } catch (error) {
     console.error("Get guru error:", error);
@@ -18,6 +25,14 @@ export async function GET() {
 // POST - Tambah guru baru
 export async function POST(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const data = await request.json();
 
     // Validasi input
@@ -35,7 +50,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newGuru = await sheets.createGuru(data);
+    const newGuru = await sheets.createGuru({ ...data, tenant_id: tenantId });
     return NextResponse.json({ success: true, data: newGuru });
   } catch (error) {
     console.error("Create guru error:", error);
@@ -49,6 +64,14 @@ export async function POST(request: NextRequest) {
 // PUT - Update guru
 export async function PUT(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id, data } = await request.json();
 
     if (!id) {

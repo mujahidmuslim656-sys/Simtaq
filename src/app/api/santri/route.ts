@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 
-// GET - Ambil semua santri
-export async function GET() {
+// GET - Ambil semua santri (filter by tenant_id)
+export async function GET(request: NextRequest) {
   try {
-    const santri = await sheets.getAllSantri();
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    const santri = await sheets.getAllSantri(tenantId);
     return NextResponse.json({ success: true, data: santri });
   } catch (error) {
     console.error("Get santri error:", error);
@@ -18,6 +25,14 @@ export async function GET() {
 // POST - Tambah santri baru
 export async function POST(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const data = await request.json();
 
     // Validasi input
@@ -42,7 +57,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newSantri = await sheets.createSantri(data);
+    const newSantri = await sheets.createSantri({ ...data, tenant_id: tenantId });
     return NextResponse.json({ success: true, data: newSantri });
   } catch (error) {
     console.error("Create santri error:", error);
@@ -56,6 +71,14 @@ export async function POST(request: NextRequest) {
 // PUT - Update santri
 export async function PUT(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id, data } = await request.json();
 
     if (!id) {
@@ -79,6 +102,14 @@ export async function PUT(request: NextRequest) {
 // DELETE - Nonaktifkan santri
 export async function DELETE(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await request.json();
 
     if (!id) {

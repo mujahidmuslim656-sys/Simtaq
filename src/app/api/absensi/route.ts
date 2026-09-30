@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 
-// GET - Ambil absensi
+// GET - Ambil absensi (filter by tenant_id)
 export async function GET(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const kelasId = searchParams.get("kelasId");
     const tanggal = searchParams.get("tanggal");
@@ -16,7 +24,7 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         );
       }
-      const absensi = await sheets.getAbsensiByKelasAndTanggal(kelasId, tanggal);
+      const absensi = await sheets.getAbsensiByKelasAndTanggal(tenantId, kelasId, tanggal);
       return NextResponse.json({ success: true, data: absensi });
     }
 
@@ -27,7 +35,7 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         );
       }
-      const stats = await sheets.getAbsensiStats(santriId);
+      const stats = await sheets.getAbsensiStats(tenantId, santriId);
       return NextResponse.json({ success: true, data: stats });
     }
 
@@ -47,6 +55,14 @@ export async function GET(request: NextRequest) {
 // POST - Simpan absensi (batch)
 export async function POST(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { absensiList } = await request.json();
 
     if (!absensiList || !Array.isArray(absensiList) || absensiList.length === 0) {
@@ -74,7 +90,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const saved = await sheets.saveAbsensi(absensiList);
+    // Add tenant_id to each item
+    const dataWithTenant = absensiList.map((item: Record<string, unknown>) => ({
+      ...item,
+      tenant_id: tenantId,
+    }));
+
+    const saved = await sheets.saveAbsensi(dataWithTenant);
     return NextResponse.json({ success: true, data: saved });
   } catch (error) {
     console.error("Save absensi error:", error);

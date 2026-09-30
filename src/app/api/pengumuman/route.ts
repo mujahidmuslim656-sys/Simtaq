@@ -3,15 +3,23 @@ import * as sheets from "@/services/googleSheets";
 
 export async function GET(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const active = searchParams.get("active");
 
     if (active === "true") {
-      const pengumuman = await sheets.getActivePengumuman();
+      const pengumuman = await sheets.getActivePengumuman(tenantId);
       return NextResponse.json({ success: true, data: pengumuman });
     }
 
-    const pengumuman = await sheets.getAllPengumuman();
+    const pengumuman = await sheets.getAllPengumuman(tenantId);
     return NextResponse.json({ success: true, data: pengumuman });
   } catch (error) {
     console.error("Get pengumuman error:", error);
@@ -24,6 +32,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const data = await request.json();
 
     if (!data.Judul || !data.Isi) {
@@ -41,7 +57,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newPengumuman = await sheets.createPengumuman(data);
+    const newPengumuman = await sheets.createPengumuman({ ...data, tenant_id: tenantId });
     return NextResponse.json({ success: true, data: newPengumuman });
   } catch (error) {
     console.error("Create pengumuman error:", error);
@@ -54,6 +70,14 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id, data } = await request.json();
 
     if (!id) {
@@ -76,6 +100,14 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const tenantId = request.cookies.get("tenant_id")?.value;
+    if (!tenantId) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await request.json();
 
     if (!id) {

@@ -151,8 +151,8 @@ export function clearCache(): void {
 // SANTRI
 // ============================================
 
-export async function getAllSantri(): Promise<Record<string, string>[]> {
-  const result = await callAppsScript("GET", { action: "getStudents" }, {}, true);
+export async function getAllSantri(tenantId?: string): Promise<Record<string, string>[]> {
+  const result = await callAppsScript("GET", { action: "getStudents", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return (result.data as Record<string, string>[]) || [];
   }
@@ -212,8 +212,8 @@ export async function deactivateSantri(id: string): Promise<boolean> {
 // GURU
 // ============================================
 
-export async function getAllGuru(): Promise<Record<string, string>[]> {
-  const result = await callAppsScript("GET", { action: "getTeachers" }, {}, true);
+export async function getAllGuru(tenantId?: string): Promise<Record<string, string>[]> {
+  const result = await callAppsScript("GET", { action: "getTeachers", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return (result.data as Record<string, string>[]) || [];
   }
@@ -242,8 +242,8 @@ export async function updateGuru(id: string, data: Record<string, unknown>): Pro
 // KELAS
 // ============================================
 
-export async function getAllKelas(): Promise<Record<string, string>[]> {
-  const result = await callAppsScript("GET", { action: "getClasses" }, {}, true);
+export async function getAllKelas(tenantId?: string): Promise<Record<string, string>[]> {
+  const result = await callAppsScript("GET", { action: "getClasses", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return (result.data as Record<string, string>[]) || [];
   }
@@ -273,11 +273,13 @@ export async function updateKelas(id: string, data: Record<string, unknown>): Pr
 // ============================================
 
 export async function getAbsensiByKelasAndTanggal(
+  tenantId: string,
   kelasId: string,
   tanggal: string
 ): Promise<Record<string, string>[]> {
   const result = await callAppsScript("GET", {
     action: "getAttendance",
+    tenantId,
     kelasId,
     tanggal,
   });
@@ -288,10 +290,12 @@ export async function getAbsensiByKelasAndTanggal(
 }
 
 export async function getAbsensiStats(
+  tenantId: string,
   santriId: string
 ): Promise<{ hadir: number; izin: number; sakit: number; alpa: number; total: number; persentase: number }> {
   const result = await callAppsScript("GET", {
     action: "getAttendanceBySantri",
+    tenantId,
     santriId,
   });
   if (result.success) {
@@ -370,17 +374,18 @@ export async function deleteProgress(id: string): Promise<boolean> {
 // HAFALAN
 // ============================================
 
-export async function getAllHafalan(): Promise<Record<string, string>[]> {
-  const result = await callAppsScript("GET", { action: "getHafalan" }, {}, true);
+export async function getAllHafalan(tenantId?: string): Promise<Record<string, string>[]> {
+  const result = await callAppsScript("GET", { action: "getHafalan", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return (result.data as Record<string, string>[]) || [];
   }
   throw new Error(result.error || "Gagal memuat hafalan");
 }
 
-export async function getHafalanBySantri(santriId: string): Promise<Record<string, string>[]> {
+export async function getHafalanBySantri(tenantId: string, santriId: string): Promise<Record<string, string>[]> {
   const result = await callAppsScript("GET", {
     action: "getHafalan",
+    tenantId,
     santriId,
   });
   if (result.success) {
@@ -474,17 +479,18 @@ export async function deleteCatatan(id: string): Promise<boolean> {
 // IURAN
 // ============================================
 
-export async function getAllIuran(): Promise<Record<string, unknown>[]> {
-  const result = await callAppsScript("GET", { action: "getIuran" }, {}, true);
+export async function getAllIuran(tenantId?: string): Promise<Record<string, unknown>[]> {
+  const result = await callAppsScript("GET", { action: "getIuran", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return (result.data as Record<string, unknown>[]) || [];
   }
   throw new Error(result.error || "Gagal memuat iuran");
 }
 
-export async function getIuranBySantri(santriId: string): Promise<Record<string, unknown>[]> {
+export async function getIuranBySantri(tenantId: string, santriId: string): Promise<Record<string, unknown>[]> {
   const result = await callAppsScript("GET", {
     action: "getIuran",
+    tenantId,
     santriId,
   });
   if (result.success) {
@@ -493,12 +499,12 @@ export async function getIuranBySantri(santriId: string): Promise<Record<string,
   throw new Error(result.error || "Gagal memuat iuran");
 }
 
-export async function getIuranStats(): Promise<{
+export async function getIuranStats(tenantId?: string): Promise<{
   totalTagihan: number;
   totalPembayaran: number;
   totalTunggakan: number;
 }> {
-  const result = await callAppsScript("GET", { action: "getIuranStats" }, {}, true);
+  const result = await callAppsScript("GET", { action: "getIuranStats", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return result.data as {
       totalTagihan: number;
@@ -540,17 +546,18 @@ export async function deleteIuran(id: string): Promise<boolean> {
 // PENGUMUMAN
 // ============================================
 
-export async function getAllPengumuman(): Promise<Record<string, string>[]> {
-  const result = await callAppsScript("GET", { action: "getPengumuman" }, {}, true);
+export async function getAllPengumuman(tenantId?: string): Promise<Record<string, string>[]> {
+  const result = await callAppsScript("GET", { action: "getPengumuman", tenantId: tenantId || "" }, {}, true);
   if (result.success) {
     return (result.data as Record<string, string>[]) || [];
   }
   throw new Error(result.error || "Gagal memuat pengumuman");
 }
 
-export async function getActivePengumuman(): Promise<Record<string, string>[]> {
+export async function getActivePengumuman(tenantId?: string): Promise<Record<string, string>[]> {
   const result = await callAppsScript("GET", {
     action: "getPengumuman",
+    tenantId: tenantId || "",
     active: "true",
   });
   if (result.success) {
