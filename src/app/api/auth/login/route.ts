@@ -15,18 +15,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Validasi login sebagai tenant
-    const tenant = validateTenantLogin(email, password);
+    const tenant = await validateTenantLogin(email, password);
 
     if (tenant) {
       const response = NextResponse.json({
         success: true,
         message: "Login berhasil",
         data: {
-          tenant_id: tenant.tenant_id,
-          nama_tpq: tenant.nama_tpq,
-          email: tenant.email,
-          paket: tenant.paket,
-          max_santri: tenant.max_santri,
+          tenant_id: tenant.Tenant_ID,
+          nama_tpq: tenant.Nama_TPQ,
+          email: tenant.Email,
+          paket: tenant.Paket,
+          max_santri: tenant.Max_Santri,
         },
       });
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Set cookie tenant_id
-      response.cookies.set("tenant_id", tenant.tenant_id, {
+      response.cookies.set("tenant_id", tenant.Tenant_ID, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",

@@ -1,91 +1,100 @@
 // ============================================
 // TENANT SERVICE
-// Manajemen data TPQ (tenant) untuk SaaS
+// Manajemen data TPQ (tenant) via Google Sheets
 // ============================================
 
-import { randomBytes } from "crypto";
+const APPS_SCRIPT_URL = process.env.GOOGLE_APPS_SCRIPT_URL;
 
 // Types
 export interface Tenant {
-  tenant_id: string;
-  nama_tpq: string;
-  nama_penanggung_jawab: string;
-  email: string;
-  password_hash: string;
-  alamat: string;
-  paket: "free" | "pro";
-  status: "active" | "inactive" | "suspended";
-  max_santri: number;
-  created_at: string;
+  Tenant_ID: string;
+  Nama_TPQ: string;
+  Nama_Penanggung_Jawab: string;
+  Email: string;
+  Password_Hash: string;
+  Alamat: string;
+  Paket: "free" | "pro";
+  Status: "active" | "inactive" | "suspended";
+  Max_Santri: number;
+  Created_At: string;
+  Updated_At: string;
 }
 
 export interface Subscription {
-  subscription_id: string;
-  tenant_id: string;
-  paket: "free" | "pro";
-  harga: number;
-  mulai_berlaku: string;
-  expired_at: string;
-  status: "active" | "expired" | "cancelled";
+  Subscription_ID: string;
+  Tenant_ID: string;
+  Paket: "free" | "pro";
+  Harga: number;
+  Mulai_Berlaku: string;
+  Expired_At: string;
+  Status: "active" | "expired" | "cancelled";
+  Created_At: string;
 }
 
 export interface Payment {
-  payment_id: string;
-  tenant_id: string;
-  subscription_id: string;
-  jumlah: number;
-  metode: string;
-  bukti_transfer: string;
-  status: "pending" | "approved" | "rejected";
-  verified_by: string;
-  verified_at: string;
-  created_at: string;
+  Payment_ID: string;
+  Tenant_ID: string;
+  Subscription_ID: string;
+  Jumlah: number;
+  Metode: string;
+  Bukti_Transfer: string;
+  Status: "pending" | "approved" | "rejected";
+  Verified_By: string;
+  Verified_At: string;
+  Created_At: string;
 }
 
-// Simple hash function untuk MVP (ganti dengan bcrypt di produksi)
-function simpleHash(password: string): string {
-  return randomBytes(16).toString("hex") + Buffer.from(password).toString("base64");
-}
-
-function verifyHash(password: string, hash: string): boolean {
-  const encoded = randomBytes(16).toString("hex") + Buffer.from(password).toString("base64");
-  return encoded === hash;
-}
-
-// Generate unique ID
-function generateId(prefix: string): string {
-  return `${prefix}_${Date.now()}_${randomBytes(4).toString("hex")}`;
-}
-
-// In-memory storage untuk MVP (ganti dengan database di produksi)
-let tenants: Tenant[] = [];
-let subscriptions: Subscription[] = [];
-let payments: Payment[] = [];
-
-// Load dari localStorage jika ada (client-side)
-function loadFromStorage(): void {
-  if (typeof window !== "undefined") {
-    const stored = localStorage.getItem("simtaq_tenants");
-    if (stored) {
-      tenants = JSON.parse(stored);
-    }
-    const storedSubs = localStorage.getItem("simtaq_subscriptions");
-    if (storedSubs) {
-      subscriptions = JSON.parse(storedSubs);
-    }
-    const storedPayments = localStorage.getItem("simtaq_payments");
-    if (storedPayments) {
-      payments = JSON.parse(storedPayments);
-    }
+// Helper: Call Apps Script API
+async function callAppsScript(
+  method: "GET" | "POST",
+  params: Record<string, string> = {},
+  body: Record<string, unknown> = {}
+): Promise<{ success: boolean; data?: unknown; error?: string }> {
+  if (!APPS_SCRIPT_URL) {
+    return { success: false, error: "GOOGLE_APPS_SCRIPT_URL tidak dikonfigurasi" };
   }
-}
 
-// Save ke localStorage (client-side)
-function saveToStorage(): void {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("simtaq_tenants", JSON.stringify(tenants));
-    localStorage.setItem("simtaq_subscriptions", JSON.stringify(subscriptions));
-    localStorage.setItem("simtaq_payments", JSON.stringify(payments));
+  try {
+    let url = APPS_SCRIPT_URL;
+    const queryParams = new URLSearchParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      queryParams.append(key, value);
+    });
+
+    if (method === "GET" && queryParams.toString()) {
+      url += `?${queryParams.toString()}`;
+    }
+
+    const options: RequestInit = {
+      method,
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+    };
+
+    if (method === "POST") {
+      const formData = new URLSearchParams();
+      formData.append("action", params.action || "");
+      Object.entries(body).forEach(([key, value]) => {
+        if (key !== "action") {
+          formData.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
+        }
+      });
+      options.body = formData.toString();
+    }
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("callAppsScript error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Gagal terhubung ke Google Sheets",
+    };
   }
 }
 
@@ -93,83 +102,62 @@ function saveToStorage(): void {
 // TENANT OPERATIONS
 // ============================================
 
-export function getAllTenants(): Tenant[] {
-  loadFromStorage();
-  return tenants;
+export async function getAllTenants(): Promise<Tenant[]> {
+  const result = await callAppsScript("GET", { action: "getTenants" });
+  if (result.success) {
+    return (result.data as Tenant[]) || [];
+  }
+  throw new Error(result.error || "Gagal memuat data tenant");
 }
 
-export function getTenantById(tenantId: string): Tenant | null {
-  loadFromStorage();
-  return tenants.find((t) => t.tenant_id === tenantId) || null;
+export async function getTenantById(tenantId: string): Promise<Tenant | null> {
+  const result = await callAppsScript("GET", {
+    action: "getTenantById",
+    tenantId,
+  });
+  if (result.success) {
+    return (result.data as Tenant) || null;
+  }
+  return null;
 }
 
-export function getTenantByEmail(email: string): Tenant | null {
-  loadFromStorage();
-  return tenants.find((t) => t.email === email) || null;
+export async function getTenantByEmail(email: string): Promise<Tenant | null> {
+  const result = await callAppsScript("GET", {
+    action: "getTenantByEmail",
+    email,
+  });
+  if (result.success) {
+    return (result.data as Tenant) || null;
+  }
+  return null;
 }
 
-export function createTenant(data: {
+export async function createTenant(data: {
   nama_tpq: string;
   nama_penanggung_jawab: string;
   email: string;
   password: string;
   alamat: string;
-}): Tenant {
-  loadFromStorage();
-
-  // Cek email sudah terdaftar
-  if (tenants.find((t) => t.email === data.email)) {
-    throw new Error("Email sudah terdaftar");
+}): Promise<Tenant> {
+  const result = await callAppsScript("POST", { action: "createTenant" }, data);
+  if (result.success) {
+    return result.data as Tenant;
   }
-
-  const tenant: Tenant = {
-    tenant_id: generateId("TPQ"),
-    nama_tpq: data.nama_tpq,
-    nama_penanggung_jawab: data.nama_penanggung_jawab,
-    email: data.email,
-    password_hash: simpleHash(data.password),
-    alamat: data.alamat,
-    paket: "free",
-    status: "active",
-    max_santri: 10,
-    created_at: new Date().toISOString(),
-  };
-
-  tenants.push(tenant);
-
-  // Buat subscription free
-  const subscription: Subscription = {
-    subscription_id: generateId("SUB"),
-    tenant_id: tenant.tenant_id,
-    paket: "free",
-    harga: 0,
-    mulai_berlaku: new Date().toISOString(),
-    expired_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 tahun
-    status: "active",
-  };
-  subscriptions.push(subscription);
-
-  saveToStorage();
-  return tenant;
+  throw new Error(result.error || "Gagal membuat tenant");
 }
 
-export function validateTenantLogin(email: string, password: string): Tenant | null {
-  loadFromStorage();
-  const tenant = tenants.find((t) => t.email === email);
-  if (tenant && verifyHash(password, tenant.password_hash)) {
-    return tenant;
+export async function validateTenantLogin(email: string, password: string): Promise<Tenant | null> {
+  const result = await callAppsScript("POST", { action: "loginTenant" }, { email, password });
+  if (result.success) {
+    return result.data as Tenant;
   }
   return null;
 }
 
-export function updateTenantPlan(tenantId: string, paket: "free" | "pro"): Tenant | null {
-  loadFromStorage();
-  const tenant = tenants.find((t) => t.tenant_id === tenantId);
-  if (tenant) {
-    tenant.paket = paket;
-    tenant.max_santri = paket === "pro" ? 100 : 10;
-    saveToStorage();
-    return tenant;
+export async function updateTenantPlan(tenantId: string, paket: "free" | "pro"): Promise<Tenant | null> {
+  const result = await callAppsScript("POST", { action: "updateTenantPlan" }, { tenantId, paket });
+  if (result.success) {
+    return result.data as Tenant;
   }
   return null;
 }
@@ -178,98 +166,69 @@ export function updateTenantPlan(tenantId: string, paket: "free" | "pro"): Tenan
 // SUBSCRIPTION OPERATIONS
 // ============================================
 
-export function getSubscriptionByTenant(tenantId: string): Subscription | null {
-  loadFromStorage();
-  return subscriptions.find((s) => s.tenant_id === tenantId) || null;
+export async function getSubscriptionByTenant(tenantId: string): Promise<Subscription | null> {
+  const result = await callAppsScript("GET", {
+    action: "getSubscriptionByTenant",
+    tenantId,
+  });
+  if (result.success) {
+    return (result.data as Subscription) || null;
+  }
+  return null;
 }
 
-export function createSubscription(data: {
+export async function createSubscription(data: {
   tenant_id: string;
   paket: "free" | "pro";
   harga: number;
-}): Subscription {
-  loadFromStorage();
-
-  // Cancel existing active subscription
-  subscriptions = subscriptions.map((s) =>
-    s.tenant_id === data.tenant_id && s.status === "active"
-      ? { ...s, status: "cancelled" as const }
-      : s
-  );
-
-  const subscription: Subscription = {
-    subscription_id: generateId("SUB"),
-    tenant_id: data.tenant_id,
-    paket: data.paket,
-    harga: data.harga,
-    mulai_berlaku: new Date().toISOString(),
-    expired_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 hari
-    status: "active",
-  };
-
-  subscriptions.push(subscription);
-  saveToStorage();
-  return subscription;
+}): Promise<Subscription> {
+  const result = await callAppsScript("POST", { action: "createSubscription" }, data);
+  if (result.success) {
+    return result.data as Subscription;
+  }
+  throw new Error(result.error || "Gagal membuat subscription");
 }
 
 // ============================================
 // PAYMENT OPERATIONS
 // ============================================
 
-export function createPayment(data: {
+export async function getAllPayments(): Promise<Payment[]> {
+  const result = await callAppsScript("GET", { action: "getPayments" });
+  if (result.success) {
+    return (result.data as Payment[]) || [];
+  }
+  throw new Error(result.error || "Gagal memuat data pembayaran");
+}
+
+export async function getPaymentsByTenant(tenantId: string): Promise<Payment[]> {
+  const result = await callAppsScript("GET", {
+    action: "getPaymentsByTenant",
+    tenantId,
+  });
+  if (result.success) {
+    return (result.data as Payment[]) || [];
+  }
+  throw new Error(result.error || "Gagal memuat data pembayaran");
+}
+
+export async function createPayment(data: {
   tenant_id: string;
   subscription_id: string;
   jumlah: number;
   bukti_transfer: string;
-}): Payment {
-  loadFromStorage();
-
-  const payment: Payment = {
-    payment_id: generateId("PAY"),
-    tenant_id: data.tenant_id,
-    subscription_id: data.subscription_id,
-    jumlah: data.jumlah,
-    metode: "transfer_bank",
-    bukti_transfer: data.bukti_transfer,
-    status: "pending",
-    verified_by: "",
-    verified_at: "",
-    created_at: new Date().toISOString(),
-  };
-
-  payments.push(payment);
-  saveToStorage();
-  return payment;
+}): Promise<Payment> {
+  const result = await callAppsScript("POST", { action: "createPayment" }, data);
+  if (result.success) {
+    return result.data as Payment;
+  }
+  throw new Error(result.error || "Gagal membuat pembayaran");
 }
 
-export function getAllPayments(): Payment[] {
-  loadFromStorage();
-  return payments;
-}
-
-export function getPaymentsByTenant(tenantId: string): Payment[] {
-  loadFromStorage();
-  return payments.filter((p) => p.tenant_id === tenantId);
-}
-
-export function verifyPayment(paymentId: string, approved: boolean, verifiedBy: string): Payment | null {
-  loadFromStorage();
-  const payment = payments.find((p) => p.payment_id === paymentId);
-  if (payment) {
-    payment.status = approved ? "approved" : "rejected";
-    payment.verified_by = verifiedBy;
-    payment.verified_at = new Date().toISOString();
-
-    // Jika approved, update tenant plan
-    if (approved) {
-      const subscription = subscriptions.find((s) => s.subscription_id === payment.subscription_id);
-      if (subscription) {
-        updateTenantPlan(payment.tenant_id, subscription.paket);
-      }
-    }
-
-    saveToStorage();
-    return payment;
+export async function verifyPayment(paymentId: string, approved: boolean, verifiedBy: string): Promise<Payment | null> {
+  const result = await callAppsScript("POST", { action: "verifyPayment" }, { paymentId, approved, verifiedBy });
+  if (result.success) {
+    return result.data as Payment;
   }
   return null;
 }
@@ -278,17 +237,20 @@ export function verifyPayment(paymentId: string, approved: boolean, verifiedBy: 
 // ADMIN OPERATIONS
 // ============================================
 
-export function getAdminStats(): {
+export async function getAdminStats(): Promise<{
   totalTenants: number;
   activeTenants: number;
   pendingPayments: number;
   proTenants: number;
-} {
-  loadFromStorage();
-  return {
-    totalTenants: tenants.length,
-    activeTenants: tenants.filter((t) => t.status === "active").length,
-    pendingPayments: payments.filter((p) => p.status === "pending").length,
-    proTenants: tenants.filter((t) => t.paket === "pro").length,
-  };
+}> {
+  const result = await callAppsScript("GET", { action: "getAdminStats" });
+  if (result.success) {
+    return result.data as {
+      totalTenants: number;
+      activeTenants: number;
+      pendingPayments: number;
+      proTenants: number;
+    };
+  }
+  throw new Error(result.error || "Gagal memuat statistik admin");
 }

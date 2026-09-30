@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const subscription = getSubscriptionByTenant(tenantId);
+    const subscription = await getSubscriptionByTenant(tenantId);
 
     if (!subscription) {
       return NextResponse.json(
@@ -48,16 +48,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Buat subscription
-    const subscription = createSubscription({
+    const subscription = await createSubscription({
       tenant_id,
       paket,
       harga,
     });
 
     // Buat payment record
-    const payment = createPayment({
+    const payment = await createPayment({
       tenant_id,
-      subscription_id: subscription.subscription_id,
+      subscription_id: subscription.Subscription_ID,
       jumlah: harga,
       bukti_transfer: bukti_transfer || "",
     });

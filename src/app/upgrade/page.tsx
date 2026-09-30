@@ -14,35 +14,22 @@ export default function UpgradePage() {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    // Cek login status
     const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: "", password: "" }),
-        });
-        // Jika tidak redirect, berarti sudah login
-        const cookies = document.cookie;
-        if (!cookies.includes("isLoggedIn=true")) {
-          router.push("/login");
-          return;
-        }
-
-        // Ambil tenant_id dari cookie
-        const tenantIdMatch = cookies.match(/tenant_id=([^;]+)/);
-        if (tenantIdMatch) {
-          setTenant({
-            tenant_id: tenantIdMatch[1],
-            nama_tpq: "",
-            paket: "free",
-          });
-        }
-      } catch {
+      const cookies = document.cookie;
+      if (!cookies.includes("isLoggedIn=true")) {
         router.push("/login");
-      } finally {
-        setLoading(false);
+        return;
       }
+
+      const tenantIdMatch = cookies.match(/tenant_id=([^;]+)/);
+      if (tenantIdMatch) {
+        setTenant({
+          tenant_id: tenantIdMatch[1],
+          nama_tpq: "",
+          paket: "free",
+        });
+      }
+      setLoading(false);
     };
 
     checkAuth();
@@ -63,7 +50,7 @@ export default function UpgradePage() {
           tenant_id: tenant.tenant_id,
           paket: "pro",
           harga: 49000,
-          bukti_transfer: "", // TODO: Implement file upload
+          bukti_transfer: "",
         }),
       });
 

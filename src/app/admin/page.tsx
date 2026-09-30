@@ -5,23 +5,23 @@ import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 
 interface Tenant {
-  tenant_id: string;
-  nama_tpq: string;
-  nama_penanggung_jawab: string;
-  email: string;
-  paket: string;
-  status: string;
-  max_santri: number;
-  created_at: string;
+  Tenant_ID: string;
+  Nama_TPQ: string;
+  Nama_Penanggung_Jawab: string;
+  Email: string;
+  Paket: string;
+  Status: string;
+  Max_Santri: number;
+  Created_At: string;
 }
 
 interface Payment {
-  payment_id: string;
-  tenant_id: string;
-  subscription_id: string;
-  jumlah: number;
-  status: string;
-  created_at: string;
+  Payment_ID: string;
+  Tenant_ID: string;
+  Subscription_ID: string;
+  Jumlah: number;
+  Status: string;
+  Created_At: string;
 }
 
 export default function AdminPage() {
@@ -139,7 +139,7 @@ export default function AdminPage() {
                 : "bg-white text-gray-700 hover:bg-gray-100"
             }`}
           >
-            Pembayaran ({payments.filter((p) => p.status === "pending").length} pending)
+            Pembayaran ({payments.filter((p) => p.Status === "pending").length} pending)
           </button>
         </div>
 
@@ -169,40 +169,40 @@ export default function AdminPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {tenants.map((tenant) => (
-                    <tr key={tenant.tenant_id} className="hover:bg-gray-50">
+                    <tr key={tenant.Tenant_ID} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{tenant.nama_tpq}</p>
-                          <p className="text-xs text-gray-500">{tenant.email}</p>
+                          <p className="text-sm font-medium text-gray-900">{tenant.Nama_TPQ}</p>
+                          <p className="text-xs text-gray-500">{tenant.Email}</p>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
-                        {tenant.nama_penanggung_jawab}
+                        {tenant.Nama_Penanggung_Jawab}
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            tenant.paket === "pro"
+                            tenant.Paket === "pro"
                               ? "bg-gold-100 text-gold-800"
                               : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {tenant.paket.toUpperCase()}
+                          {tenant.Paket.toUpperCase()}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            tenant.status === "active"
+                            tenant.Status === "active"
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {tenant.status}
+                          {tenant.Status}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(tenant.created_at).toLocaleDateString("id-ID")}
+                        {new Date(tenant.Created_At).toLocaleDateString("id-ID")}
                       </td>
                     </tr>
                   ))}
@@ -246,45 +246,45 @@ export default function AdminPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {payments.map((payment) => (
-                    <tr key={payment.payment_id} className="hover:bg-gray-50">
+                    <tr key={payment.Payment_ID} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm text-gray-900 font-mono">
-                        {payment.payment_id}
+                        {payment.Payment_ID}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">
-                        {payment.tenant_id}
+                        {payment.Tenant_ID}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-900">
-                        Rp {payment.jumlah.toLocaleString("id-ID")}
+                        Rp {payment.Jumlah.toLocaleString("id-ID")}
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            payment.status === "approved"
+                            payment.Status === "approved"
                               ? "bg-green-100 text-green-800"
-                              : payment.status === "rejected"
+                              : payment.Status === "rejected"
                               ? "bg-red-100 text-red-800"
                               : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
-                          {payment.status}
+                          {payment.Status}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(payment.created_at).toLocaleDateString("id-ID")}
+                        {new Date(payment.Created_At).toLocaleDateString("id-ID")}
                       </td>
                       <td className="px-4 py-3">
-                        {payment.status === "pending" && (
+                        {payment.Status === "pending" && (
                           <div className="flex gap-2">
                             <button
-                              onClick={() => handleVerifyPayment(payment.payment_id, true)}
-                              disabled={verifying === payment.payment_id}
+                              onClick={() => handleVerifyPayment(payment.Payment_ID, true)}
+                              disabled={verifying === payment.Payment_ID}
                               className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50"
                             >
                               Approve
                             </button>
                             <button
-                              onClick={() => handleVerifyPayment(payment.payment_id, false)}
-                              disabled={verifying === payment.payment_id}
+                              onClick={() => handleVerifyPayment(payment.Payment_ID, false)}
+                              disabled={verifying === payment.Payment_ID}
                               className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50"
                             >
                               Reject

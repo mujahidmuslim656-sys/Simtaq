@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Buat tenant
-    const tenant = createTenant({
+    const tenant = await createTenant({
       nama_tpq,
       nama_penanggung_jawab,
       email,
@@ -44,10 +44,10 @@ export async function POST(request: NextRequest) {
       success: true,
       message: "Registrasi berhasil! Silakan login.",
       data: {
-        tenant_id: tenant.tenant_id,
-        nama_tpq: tenant.nama_tpq,
-        email: tenant.email,
-        paket: tenant.paket,
+        tenant_id: tenant.Tenant_ID,
+        nama_tpq: tenant.Nama_TPQ,
+        email: tenant.Email,
+        paket: tenant.Paket,
       },
     });
   } catch (error) {

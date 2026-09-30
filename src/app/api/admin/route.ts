@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const type = request.nextUrl.searchParams.get("type");
 
     if (type === "tenants") {
-      const tenants = getAllTenants();
+      const tenants = await getAllTenants();
       return NextResponse.json({
         success: true,
         data: tenants,
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === "payments") {
-      const payments = getAllPayments();
+      const payments = await getAllPayments();
       return NextResponse.json({
         success: true,
         data: payments,
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === "stats") {
-      const stats = getAdminStats();
+      const stats = await getAdminStats();
       return NextResponse.json({
         success: true,
         data: stats,
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const payment = verifyPayment(payment_id, approved, verified_by);
+    const payment = await verifyPayment(payment_id, approved, verified_by);
 
     if (!payment) {
       return NextResponse.json(
