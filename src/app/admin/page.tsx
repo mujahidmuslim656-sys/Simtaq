@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Logo from "@/components/Logo";
+import AdminLayout from "@/components/layout/AdminLayout";
+import StatsCard from "@/components/ui/StatsCard";
+import Card from "@/components/ui/Card";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import PageHeader from "@/components/ui/PageHeader";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
 
 interface Tenant {
   Tenant_ID: string;
@@ -26,9 +32,15 @@ interface Payment {
 
 export default function AdminPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"tenants" | "payments">("tenants");
+  const [activeTab, setActiveTab] = useState<"overview" | "tenants" | "payments">("overview");
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [stats, setStats] = useState({
+    totalTenants: 0,
+    activeTenants: 0,
+    pendingPayments: 0,
+    proTenants: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState<string | null>(null);
 
@@ -38,8 +50,8 @@ export default function AdminPage() {
 
   const checkAuth = async () => {
     const cookies = document.cookie;
-    if (!cookies.includes("isLoggedIn=true")) {
-      router.push("/login");
+    if (!cookies.includes("isAdmin=true")) {
+      router.push("/admin/login");
       return;
     }
     loadData();
@@ -48,16 +60,19 @@ export default function AdminPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [tenantsRes, paymentsRes] = await Promise.all([
+      const [tenantsRes, paymentsRes, statsRes] = await Promise.all([
         fetch("/api/admin?type=tenants"),
         fetch("/api/admin?type=payments"),
+        fetch("/api/admin?type=stats"),
       ]);
 
       const tenantsData = await tenantsRes.json();
       const paymentsData = await paymentsRes.json();
+      const statsData = await statsRes.json();
 
       if (tenantsData.success) setTenants(tenantsData.data);
       if (paymentsData.success) setPayments(paymentsData.data);
+      if (statsData.success) setStats(statsData.data);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
@@ -89,222 +104,249 @@ export default function AdminPage() {
     }
   };
 
+  const handleLogout = () => {
+    document.cookie = "isAdmin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    router.push("/admin/login");
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
+      <AdminLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Logo size="md" />
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">Admin Panel</span>
-              <button
-                onClick={() => router.push("/")}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                Lihat Landing
-              </button>
-            </div>
+    <AdminLayout>
+      <PageHeader
+        title="Admin Dashboard"
+        subtitle="Pantau perkembangan pendaftar TPQ dan verifikasi pembayaran"
+        action={
+          <Button variant="secondary" onClick={handleLogout}>
+            Keluar
+          </Button>
+        }
+      />
+
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${
+            activeTab === "overview"
+              ? "bg-primary-600 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+          }`}
+        >
+          Overview
+        </button>
+        <button
+          onClick={() => setActiveTab("tenants")}
+          className={`px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${
+            activeTab === "tenants"
+              ? "bg-primary-600 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+          }`}
+        >
+          Daftar TPQ ({tenants.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("payments")}
+          className={`px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${
+            activeTab === "payments"
+              ? "bg-primary-600 text-white shadow-md"
+              : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+          }`}
+        >
+          Pembayaran ({payments.filter((p) => p.Status === "pending").length} pending)
+        </button>
+      </div>
+
+      {/* Overview Tab */}
+      {activeTab === "overview" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard
+              title="Total TPQ"
+              value={stats.totalTenants}
+              color="blue"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              }
+            />
+            <StatsCard
+              title="TPQ Active"
+              value={stats.activeTenants}
+              color="green"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            <StatsCard
+              title="TPQ Pro"
+              value={stats.proTenants}
+              color="gold"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+              }
+            />
+            <StatsCard
+              title="Pending Payments"
+              value={stats.pendingPayments}
+              color="purple"
+              icon={
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          <button
-            onClick={() => setActiveTab("tenants")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === "tenants"
-                ? "bg-primary-600 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Daftar TPQ ({tenants.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("payments")}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              activeTab === "payments"
-                ? "bg-primary-600 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Pembayaran ({payments.filter((p) => p.Status === "pending").length} pending)
-          </button>
+          {/* Recent Tenants */}
+          <Card title="TPQ Terbaru" subtitle="5 TPQ yang baru mendaftar">
+            <div className="space-y-3">
+              {tenants.slice(0, 5).map((tenant) => (
+                <div key={tenant.Tenant_ID} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                  <div>
+                    <p className="font-medium text-gray-900">{tenant.Nama_TPQ}</p>
+                    <p className="text-sm text-gray-500">{tenant.Email}</p>
+                  </div>
+                  <Badge variant={tenant.Paket === "pro" ? "gold" : "default"}>
+                    {tenant.Paket.toUpperCase()}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
         </div>
+      )}
 
-        {/* Tenants Tab */}
-        {activeTab === "tenants" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      TPQ
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Penanggung Jawab
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Paket
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Terdaftar
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {tenants.map((tenant) => (
-                    <tr key={tenant.Tenant_ID} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{tenant.Nama_TPQ}</p>
-                          <p className="text-xs text-gray-500">{tenant.Email}</p>
+      {/* Tenants Tab */}
+      {activeTab === "tenants" && (
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>TPQ</TableHead>
+                <TableHead>Penanggung Jawab</TableHead>
+                <TableHead>Paket</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Terdaftar</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tenants.map((tenant) => (
+                <TableRow key={tenant.Tenant_ID}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-gray-900">{tenant.Nama_TPQ}</p>
+                      <p className="text-xs text-gray-500">{tenant.Email}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>{tenant.Nama_Penanggung_Jawab}</TableCell>
+                  <TableCell>
+                    <Badge variant={tenant.Paket === "pro" ? "gold" : "default"}>
+                      {tenant.Paket.toUpperCase()}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={tenant.Status === "active" ? "success" : "danger"}>
+                      {tenant.Status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{new Date(tenant.Created_At).toLocaleDateString("id-ID")}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {/* Payments Tab */}
+      {activeTab === "payments" && (
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Payment ID</TableHead>
+                <TableHead>TPQ</TableHead>
+                <TableHead>Jumlah</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Tanggal</TableHead>
+                <TableHead>Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {payments.map((payment) => {
+                const tenant = tenants.find((t) => t.Tenant_ID === payment.Tenant_ID);
+                return (
+                  <TableRow key={payment.Payment_ID}>
+                    <TableCell className="font-mono text-xs">{payment.Payment_ID}</TableCell>
+                    <TableCell>{tenant?.Nama_TPQ || payment.Tenant_ID}</TableCell>
+                    <TableCell>Rp {payment.Jumlah.toLocaleString("id-ID")}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          payment.Status === "approved"
+                            ? "success"
+                            : payment.Status === "rejected"
+                            ? "danger"
+                            : "warning"
+                        }
+                      >
+                        {payment.Status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{new Date(payment.Created_At).toLocaleDateString("id-ID")}</TableCell>
+                    <TableCell>
+                      {payment.Status === "pending" && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleVerifyPayment(payment.Payment_ID, true)}
+                            disabled={verifying === payment.Payment_ID}
+                            className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleVerifyPayment(payment.Payment_ID, false)}
+                            disabled={verifying === payment.Payment_ID}
+                            className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
                         </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {tenant.Nama_Penanggung_Jawab}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            tenant.Paket === "pro"
-                              ? "bg-gold-100 text-gold-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {tenant.Paket.toUpperCase()}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            tenant.Status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {tenant.Status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(tenant.Created_At).toLocaleDateString("id-ID")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {tenants.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500">Belum ada TPQ terdaftar</p>
-              </div>
-            )}
-          </div>
-        )}
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
-        {/* Payments Tab */}
-        {activeTab === "payments" && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Payment ID
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Tenant ID
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Jumlah
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Tanggal
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Aksi
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {payments.map((payment) => (
-                    <tr key={payment.Payment_ID} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900 font-mono">
-                        {payment.Payment_ID}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-700">
-                        {payment.Tenant_ID}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        Rp {payment.Jumlah.toLocaleString("id-ID")}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            payment.Status === "approved"
-                              ? "bg-green-100 text-green-800"
-                              : payment.Status === "rejected"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {payment.Status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(payment.Created_At).toLocaleDateString("id-ID")}
-                      </td>
-                      <td className="px-4 py-3">
-                        {payment.Status === "pending" && (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleVerifyPayment(payment.Payment_ID, true)}
-                              disabled={verifying === payment.Payment_ID}
-                              className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleVerifyPayment(payment.Payment_ID, false)}
-                              disabled={verifying === payment.Payment_ID}
-                              className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {payments.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500">Belum ada pembayaran</p>
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-    </div>
+      {tenants.length === 0 && activeTab === "tenants" && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Belum ada TPQ terdaftar</p>
+        </div>
+      )}
+
+      {payments.length === 0 && activeTab === "payments" && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Belum ada pembayaran</p>
+        </div>
+      )}
+    </AdminLayout>
   );
 }

@@ -8,6 +8,7 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
+    pathname.startsWith("/admin/login") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
@@ -16,10 +17,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Cek status login untuk halaman admin
+  // Proteksi route /admin - khusus admin
+  if (pathname.startsWith("/admin")) {
+    const isAdmin = request.cookies.get("isAdmin")?.value === "true";
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // Cek status login untuk halaman tenant
   const isLoggedIn = request.cookies.get("isLoggedIn")?.value === "true";
 
-  // Redirect ke login jika belum login
   if (!isLoggedIn) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

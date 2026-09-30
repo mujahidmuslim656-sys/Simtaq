@@ -51,28 +51,6 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // Fallback ke admin login (untuk backward compatibility)
-    const adminUsername = process.env.ADMIN_USERNAME || "admin";
-    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-
-    if (email === adminUsername && password === adminPassword) {
-      const response = NextResponse.json({
-        success: true,
-        message: "Login berhasil sebagai admin",
-        data: { username: adminUsername, role: "admin" },
-      });
-
-      response.cookies.set("isLoggedIn", "true", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24 * 7,
-        path: "/",
-      });
-
-      return response;
-    }
-
     return NextResponse.json(
       { success: false, message: "Email atau password salah" },
       { status: 401 }
