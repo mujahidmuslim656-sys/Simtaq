@@ -209,8 +209,8 @@ export default function SantriPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredList.map((santri) => (
-                      <TableRow key={santri.ID_Santri}>
+                    {filteredList.map((santri, index) => (
+                      <TableRow key={santri.ID_Santri || `santri-${index}`}>
                         <TableCell>{santri.NIS}</TableCell>
                         <TableCell className="font-medium">{santri.Nama}</TableCell>
                         <TableCell>{santri.Jenis_Kelamin}</TableCell>
