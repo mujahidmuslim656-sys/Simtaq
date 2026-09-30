@@ -238,8 +238,8 @@ export default function SantriPage() {
 
               {/* Mobile Cards */}
               <div className="md:hidden space-y-4">
-                {filteredList.map((santri) => (
-                  <div key={santri.ID_Santri} className="border border-gray-200 rounded-lg p-4">
+                {filteredList.map((santri, index) => (
+                  <div key={santri.ID_Santri || `santri-mobile-${index}`} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium text-gray-900">{santri.Nama}</h3>
