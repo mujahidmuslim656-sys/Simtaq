@@ -220,6 +220,23 @@ export default function DashboardPage() {
               </div>
             </div>
           </button>
+
+          <button
+            onClick={() => router.push("/export")}
+            className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-gold-200 transition-all duration-200 text-left group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-orange-50 rounded-xl text-orange-600 group-hover:bg-orange-100 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Export Data</h3>
+                <p className="text-sm text-gray-500">Export ke Excel</p>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
 
