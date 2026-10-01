@@ -7,6 +7,7 @@ import StatsCard from "@/components/ui/StatsCard";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import IslamicPattern from "@/components/IslamicPattern";
+import DashboardCharts from "@/components/dashboard/DashboardCharts";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -17,6 +18,10 @@ export default function DashboardPage() {
   });
   const [loading, setLoading] = useState(true);
   const [tenantName, setTenantName] = useState("");
+  const [santriList, setSantriList] = useState<{ Jenis_Kelamin?: string; Status?: string; ID_Kelas?: string }[]>([]);
+  const [kelasList, setKelasList] = useState<{ ID_Kelas?: string; Nama_Kelas?: string }[]>([]);
+  const [iuranStats, setIuranStats] = useState<{ totalTagihan: number; totalPembayaran: number; totalTunggakan: number } | null>(null);
+  const [paket, setPaket] = useState("free");
 
   useEffect(() => {
     // Read tenant_name from cookie
@@ -34,21 +39,29 @@ export default function DashboardPage() {
   const loadStats = async () => {
     try {
       setLoading(true);
-      const [santriRes, guruRes, kelasRes] = await Promise.all([
+      const [santriRes, guruRes, kelasRes, iuranRes, subRes] = await Promise.all([
         fetch("/api/santri"),
         fetch("/api/guru"),
         fetch("/api/kelas"),
+        fetch("/api/iuran?stats=true"),
+        fetch("/api/subscription"),
       ]);
 
       const santriData = await santriRes.json();
       const guruData = await guruRes.json();
       const kelasData = await kelasRes.json();
+      const iuranData = await iuranRes.json();
+      const subData = await subRes.json();
+      if (subData.success && subData.data?.Paket) setPaket(subData.data.Paket);
 
       setStats({
         totalSantri: santriData.data?.filter((s: { Status: string }) => s.Status === "Aktif").length || 0,
         totalGuru: guruData.data?.length || 0,
         totalKelas: kelasData.data?.length || 0,
       });
+      setSantriList(santriData.data || []);
+      setKelasList(kelasData.data || []);
+      setIuranStats(iuranData.success ? iuranData.data : null);
     } catch (error) {
       console.error("Failed to load stats:", error);
       setStats({ totalSantri: 0, totalGuru: 0, totalKelas: 0 });
@@ -114,6 +127,9 @@ export default function DashboardPage() {
           }
         />
       </div>
+
+      {/* Charts */}
+      <DashboardCharts santri={santriList} kelas={kelasList} iuranStats={iuranStats} />
 
       {/* Quick Actions */}
       <div className="mb-8">
@@ -245,11 +261,17 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h3 className="font-semibold text-gray-900">Paket Langganan</h3>
-            <p className="text-sm text-gray-500 mt-1">Anda sedang menggunakan paket Free</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Anda sedang menggunakan paket <span className="capitalize font-medium">{paket}</span>
+            </p>
           </div>
-          <Button variant="gold" onClick={() => router.push("/upgrade")}>
-            Upgrade ke Pro
-          </Button>
+          {paket === "pro" ? (
+            <span className="px-3 py-1.5 text-sm font-medium bg-gold-100 text-gold-700 rounded-lg">Paket Aktif</span>
+          ) : (
+            <Button variant="gold" onClick={() => router.push("/upgrade")}>
+              Upgrade ke Pro
+            </Button>
+          )}
         </div>
       </Card>
     </AdminLayout>

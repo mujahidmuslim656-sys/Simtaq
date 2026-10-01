@@ -338,6 +338,8 @@ function doPost(e) {
         return loginTenant(data.email, data.password);
       case "updateTenantPlan":
         return updateTenantPlan(data.tenantId, data.paket);
+      case "updateTenant":
+        return updateTenantProfile(data.tenantId, data);
 
       // SUBSCRIPTIONS
       case "createSubscription":
@@ -534,6 +536,28 @@ function updateTenantPlan(tenantId, paket) {
   sheet.getRange(rowIndex, 11).setValue(new Date().toISOString()); // Updated_At
 
   return jsonResponse({ success: true });
+}
+
+function updateTenantProfile(tenantId, data) {
+  const sheet = getSheet(SHEET_NAMES.TENANTS);
+  const rowIndex = findRowIndex(sheet, 0, tenantId);
+
+  if (rowIndex === -1) {
+    return jsonResponse({ success: false, message: "Tenant tidak ditemukan" });
+  }
+
+  if (!data.Nama_TPQ || !data.Nama_Penanggung_Jawab || !data.Email || !data.Alamat) {
+    return jsonResponse({ success: false, message: "Semua field wajib diisi" });
+  }
+
+  sheet.getRange(rowIndex, 2).setValue(data.Nama_TPQ); // Nama_TPQ
+  sheet.getRange(rowIndex, 3).setValue(data.Nama_Penanggung_Jawab); // Nama_Penanggung_Jawab
+  sheet.getRange(rowIndex, 4).setValue(data.Email); // Email
+  sheet.getRange(rowIndex, 6).setValue(data.Alamat); // Alamat
+  sheet.getRange(rowIndex, 11).setValue(new Date().toISOString()); // Updated_At
+
+  const tenant = sheetToJSON(sheet).find((t) => t.Tenant_ID === tenantId);
+  return jsonResponse({ success: true, data: tenant || null });
 }
 
 // ============================================

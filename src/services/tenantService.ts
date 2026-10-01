@@ -156,6 +156,22 @@ export async function updateTenantPlan(tenantId: string, paket: "free" | "pro"):
   return null;
 }
 
+export async function updateTenantProfile(
+  tenantId: string,
+  data: {
+    Nama_TPQ: string;
+    Nama_Penanggung_Jawab: string;
+    Email: string;
+    Alamat: string;
+  }
+): Promise<Tenant | null> {
+  const result = await callAppsScript("POST", { action: "updateTenant" }, { tenantId, ...data });
+  if (result.success) {
+    return (result.data as Tenant) || null;
+  }
+  return null;
+}
+
 // ============================================
 // SUBSCRIPTION OPERATIONS
 // ============================================
