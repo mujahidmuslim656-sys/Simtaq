@@ -5,6 +5,7 @@ interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  label?: string;
 }
 
 export default function SearchInput({
@@ -12,15 +13,24 @@ export default function SearchInput({
   value,
   onChange,
   className = "",
+  label,
 }: SearchInputProps) {
+  const inputId = label ? `search-${label.toLowerCase().replace(/\s+/g, "-")}` : undefined;
+
   return (
     <div className={`relative ${className}`}>
+      {label && (
+        <label htmlFor={inputId} className="sr-only">
+          {label}
+        </label>
+      )}
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         <svg
           className="h-5 w-5 text-gray-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -31,6 +41,7 @@ export default function SearchInput({
         </svg>
       </div>
       <input
+        id={inputId}
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}

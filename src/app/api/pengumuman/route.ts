@@ -1,50 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
+import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const { searchParams } = new URL(request.url);
     const active = searchParams.get("active");
 
     if (active === "true") {
-      const pengumuman = await sheets.getActivePengumuman(tenantId);
+      const pengumuman = await sheets.getActivePengumuman(tenantId || undefined);
       return NextResponse.json({ success: true, data: pengumuman });
     }
 
-    const pengumuman = await sheets.getAllPengumuman(tenantId);
+    const pengumuman = await sheets.getAllPengumuman(tenantId || undefined);
     return NextResponse.json({ success: true, data: pengumuman });
   } catch (error) {
     console.error("Get pengumuman error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal memuat data pengumuman" },
+      { success: false, message: "Gagal memuat data pengumuman" },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const data = await request.json();
 
     if (!data.Judul || !data.Isi) {
       return NextResponse.json(
-        { success: false, error: "Data tidak lengkap" },
+        { success: false, message: "Data tidak lengkap" },
         { status: 400 }
       );
     }
@@ -52,7 +49,7 @@ export async function POST(request: NextRequest) {
     const validStatuses = ["Aktif", "Nonaktif"];
     if (data.Status && !validStatuses.includes(data.Status)) {
       return NextResponse.json(
-        { success: false, error: "Status tidak valid" },
+        { success: false, message: "Status tidak valid" },
         { status: 400 }
       );
     }
@@ -62,27 +59,23 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Create pengumuman error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menambah pengumuman" },
+      { success: false, message: "Gagal menambah pengumuman" },
       { status: 500 }
     );
   }
 }
 
 export async function PUT(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  try {
     const { id, data } = await request.json();
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "ID diperlukan" },
+        { success: false, message: "ID diperlukan" },
         { status: 400 }
       );
     }
@@ -92,37 +85,33 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Update pengumuman error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal mengupdate pengumuman" },
+      { success: false, message: "Gagal mengupdate pengumuman" },
       { status: 500 }
     );
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  try {
     const { id } = await request.json();
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "ID diperlukan" },
+        { success: false, message: "ID diperlukan" },
         { status: 400 }
       );
     }
 
     await sheets.deletePengumuman(id);
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: "Pengumuman berhasil dihapus" });
   } catch (error) {
     console.error("Delete pengumuman error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menghapus pengumuman" },
+      { success: false, message: "Gagal menghapus pengumuman" },
       { status: 500 }
     );
   }

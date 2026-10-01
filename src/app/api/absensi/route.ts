@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
+import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
 
 // GET - Ambil absensi (filter by tenant_id)
 export async function GET(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const { searchParams } = new URL(request.url);
     const kelasId = searchParams.get("kelasId");
     const tanggal = searchParams.get("tanggal");
@@ -20,33 +19,33 @@ export async function GET(request: NextRequest) {
     if (kelasId && tanggal) {
       if (!kelasId.trim() || !tanggal.trim()) {
         return NextResponse.json(
-          { success: false, error: "Parameter tidak valid" },
+          { success: false, message: "Parameter tidak valid" },
           { status: 400 }
         );
       }
-      const absensi = await sheets.getAbsensiByKelasAndTanggal(tenantId, kelasId, tanggal);
+      const absensi = await sheets.getAbsensiByKelasAndTanggal(tenantId || "", kelasId, tanggal);
       return NextResponse.json({ success: true, data: absensi });
     }
 
     if (santriId) {
       if (!santriId.trim()) {
         return NextResponse.json(
-          { success: false, error: "Parameter tidak valid" },
+          { success: false, message: "Parameter tidak valid" },
           { status: 400 }
         );
       }
-      const stats = await sheets.getAbsensiStats(tenantId, santriId);
+      const stats = await sheets.getAbsensiStats(tenantId || "", santriId);
       return NextResponse.json({ success: true, data: stats });
     }
 
     return NextResponse.json(
-      { success: false, error: "Parameter tidak valid" },
+      { success: false, message: "Parameter tidak valid" },
       { status: 400 }
     );
   } catch (error) {
     console.error("Get absensi error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal memuat data absensi" },
+      { success: false, message: "Gagal memuat data absensi" },
       { status: 500 }
     );
   }
@@ -54,20 +53,18 @@ export async function GET(request: NextRequest) {
 
 // POST - Simpan absensi (batch)
 export async function POST(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const { absensiList } = await request.json();
 
     if (!absensiList || !Array.isArray(absensiList) || absensiList.length === 0) {
       return NextResponse.json(
-        { success: false, error: "Data absensi tidak valid" },
+        { success: false, message: "Data absensi tidak valid" },
         { status: 400 }
       );
     }
@@ -76,7 +73,7 @@ export async function POST(request: NextRequest) {
     for (const item of absensiList) {
       if (!item.ID_Santri || !item.ID_Kelas || !item.Tanggal || !item.Status) {
         return NextResponse.json(
-          { success: false, error: "Data absensi tidak lengkap" },
+          { success: false, message: "Data absensi tidak lengkap" },
           { status: 400 }
         );
       }
@@ -84,7 +81,7 @@ export async function POST(request: NextRequest) {
       const validStatuses = ["Hadir", "Izin", "Sakit", "Alpa"];
       if (!validStatuses.includes(item.Status)) {
         return NextResponse.json(
-          { success: false, error: "Status absensi tidak valid" },
+          { success: false, message: "Status absensi tidak valid" },
           { status: 400 }
         );
       }
@@ -101,7 +98,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Save absensi error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menyimpan absensi" },
+      { success: false, message: "Gagal menyimpan absensi" },
       { status: 500 }
     );
   }

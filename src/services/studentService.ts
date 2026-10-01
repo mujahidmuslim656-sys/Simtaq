@@ -6,16 +6,19 @@
 import { Santri, SantriFormData } from "@/types";
 import * as sheets from "./googleSheets";
 
-export async function getAllSantri(): Promise<Santri[]> {
-  return sheets.getAllSantri() as unknown as Promise<Santri[]>;
+export async function getAllSantri(tenantId?: string): Promise<Santri[]> {
+  const result = await sheets.getAllSantri(tenantId);
+  return result as unknown as Santri[];
 }
 
 export async function getSantriById(id: string): Promise<Santri | null> {
-  return sheets.getSantriById(id) as unknown as Promise<Santri | null>;
+  const result = await sheets.getSantriById(id);
+  return result as unknown as Santri | null;
 }
 
 export async function getSantriByToken(token: string): Promise<Santri | null> {
-  return sheets.getSantriByToken(token) as unknown as Promise<Santri | null>;
+  const result = await sheets.getSantriByToken(token);
+  return result as unknown as Santri | null;
 }
 
 export async function createSantri(data: SantriFormData): Promise<Santri> {

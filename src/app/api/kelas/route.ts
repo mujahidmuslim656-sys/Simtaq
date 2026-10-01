@@ -1,22 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
+import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
 
 // GET - Ambil semua kelas (filter by tenant_id)
 export async function GET(request: NextRequest) {
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
+
+  const tenantId = getTenantId(request);
+
   try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-    const kelas = await sheets.getAllKelas(tenantId);
+    const kelas = await sheets.getAllKelas(tenantId || undefined);
     return NextResponse.json({ success: true, data: kelas });
   } catch (error) {
     console.error("Get kelas error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal memuat data kelas" },
+      { success: false, message: "Gagal memuat data kelas" },
       { status: 500 }
     );
   }
@@ -24,28 +24,34 @@ export async function GET(request: NextRequest) {
 
 // POST - Tambah kelas baru
 export async function POST(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const data = await request.json();
 
     // Validasi input
     if (!data.Nama_Kelas || data.Nama_Kelas.trim() === "") {
       return NextResponse.json(
-        { success: false, error: "Nama kelas wajib diisi" },
+        { success: false, message: "Nama kelas wajib diisi" },
         { status: 400 }
       );
     }
 
     if (!data.ID_Guru || data.ID_Guru.trim() === "") {
       return NextResponse.json(
-        { success: false, error: "ID Guru wajib diisi" },
+        { success: false, message: "ID Guru wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    // Validasi Status
+    if (data.Status && !["Aktif", "Nonaktif"].includes(data.Status)) {
+      return NextResponse.json(
+        { success: false, message: "Status harus Aktif atau Nonaktif" },
         { status: 400 }
       );
     }
@@ -55,7 +61,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Create kelas error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menambah kelas" },
+      { success: false, message: "Gagal menambah kelas" },
       { status: 500 }
     );
   }
@@ -63,20 +69,16 @@ export async function POST(request: NextRequest) {
 
 // PUT - Update kelas
 export async function PUT(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  try {
     const { id, data } = await request.json();
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "ID kelas diperlukan" },
+        { success: false, message: "ID kelas diperlukan" },
         { status: 400 }
       );
     }
@@ -86,7 +88,34 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Update kelas error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal mengupdate kelas" },
+      { success: false, message: "Gagal mengupdate kelas" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Hapus kelas
+export async function DELETE(request: NextRequest) {
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
+
+  try {
+    const { id } = await request.json();
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "ID kelas diperlukan" },
+        { status: 400 }
+      );
+    }
+
+    await sheets.deleteKelas(id);
+    return NextResponse.json({ success: true, message: "Kelas berhasil dihapus" });
+  } catch (error) {
+    console.error("Delete kelas error:", error);
+    return NextResponse.json(
+      { success: false, message: "Gagal menghapus kelas" },
       { status: 500 }
     );
   }

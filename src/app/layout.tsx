@@ -16,6 +16,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
+      <head>
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+        <meta httpEquiv="X-Frame-Options" content="DENY" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
