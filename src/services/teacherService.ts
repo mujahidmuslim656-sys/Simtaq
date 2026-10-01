@@ -6,8 +6,8 @@
 import { Guru, GuruFormData } from "@/types";
 import * as sheets from "./googleSheets";
 
-export async function getAllGuru(): Promise<Guru[]> {
-  return sheets.getAllGuru() as unknown as Promise<Guru[]>;
+export async function getAllGuru(tenantId?: string): Promise<Guru[]> {
+  return sheets.getAllGuru(tenantId) as unknown as Promise<Guru[]>;
 }
 
 export async function getGuruById(id: string): Promise<Guru | null> {
@@ -34,6 +34,7 @@ export async function updateGuru(
 }
 
 export async function deleteGuru(id: string): Promise<boolean> {
-  // TODO: Implement delete
-  return true;
+  // Delete via Google Sheets
+  const result = await sheets.deleteGuru(id);
+  return result;
 }

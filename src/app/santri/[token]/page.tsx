@@ -39,6 +39,11 @@ export default function ParentPortalPage() {
         return;
       }
 
+      if (!Array.isArray(santriResult.data)) {
+        setError("Data tidak valid");
+        return;
+      }
+
       const foundSantri = santriResult.data.find((s: Santri) => s.Access_Token === token);
 
       if (!foundSantri) {

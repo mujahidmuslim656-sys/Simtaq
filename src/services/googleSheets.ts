@@ -232,6 +232,15 @@ export async function updateGuru(id: string, data: Record<string, unknown>): Pro
   throw new Error(result.error || "Gagal mengupdate guru");
 }
 
+export async function deleteGuru(id: string): Promise<boolean> {
+  clearCache();
+  const result = await callAppsScript("POST", { action: "deleteTeacher" }, { id });
+  if (result.success) {
+    return true;
+  }
+  throw new Error(result.error || "Gagal menghapus guru");
+}
+
 // ============================================
 // KELAS
 // ============================================
@@ -260,6 +269,15 @@ export async function updateKelas(id: string, data: Record<string, unknown>): Pr
     return result.data as Record<string, string>;
   }
   throw new Error(result.error || "Gagal mengupdate kelas");
+}
+
+export async function deleteKelas(id: string): Promise<boolean> {
+  clearCache();
+  const result = await callAppsScript("POST", { action: "deleteClass" }, { id });
+  if (result.success) {
+    return true;
+  }
+  throw new Error(result.error || "Gagal menghapus kelas");
 }
 
 // ============================================

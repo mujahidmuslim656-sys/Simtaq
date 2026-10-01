@@ -6,8 +6,8 @@
 import { Kelas, KelasFormData } from "@/types";
 import * as sheets from "./googleSheets";
 
-export async function getAllKelas(): Promise<Kelas[]> {
-  return sheets.getAllKelas() as unknown as Promise<Kelas[]>;
+export async function getAllKelas(tenantId?: string): Promise<Kelas[]> {
+  return sheets.getAllKelas(tenantId) as unknown as Promise<Kelas[]>;
 }
 
 export async function getKelasById(id: string): Promise<Kelas | null> {
@@ -29,6 +29,7 @@ export async function updateKelas(
 }
 
 export async function deleteKelas(id: string): Promise<boolean> {
-  // TODO: Implement delete
-  return true;
+  // Delete via Google Sheets
+  const result = await sheets.deleteKelas(id);
+  return result;
 }
