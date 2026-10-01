@@ -535,6 +535,23 @@ function updateTenantPlan(tenantId, paket) {
   sheet.getRange(rowIndex, 9).setValue(paket === "pro" ? 100 : 10); // Max_Santri
   sheet.getRange(rowIndex, 11).setValue(new Date().toISOString()); // Updated_At
 
+  // Sinkronkan sheet Subscriptions agar tampilan paket konsisten
+  try {
+    const subsSheet = getSheet(SHEET_NAMES.SUBSCRIPTIONS);
+    const subsData = sheetToJSON(subsSheet);
+    const subIndex = subsData.findIndex((s) => s.Tenant_ID === tenantId && s.Status === "active");
+    if (subIndex !== -1) {
+      const row = subIndex + 2; // +2: header + 0-index
+      subsSheet.getRange(row, 3).setValue(paket); // Paket
+      subsSheet.getRange(row, 4).setValue(paket === "pro" ? 99000 : 0); // Harga
+      const expired = new Date();
+      expired.setDate(expired.getDate() + 30);
+      subsSheet.getRange(row, 6).setValue(expired.toISOString()); // Expired_At
+    }
+  } catch (e) {
+    // Jangan gagalkan update paket walau sinkronisasi subscription bermasalah
+  }
+
   return jsonResponse({ success: true });
 }
 

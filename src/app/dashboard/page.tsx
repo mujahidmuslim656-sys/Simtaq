@@ -52,7 +52,14 @@ export default function DashboardPage() {
       const kelasData = await kelasRes.json();
       const iuranData = await iuranRes.json();
       const subData = await subRes.json();
-      if (subData.success && subData.data?.Paket) setPaket(subData.data.Paket);
+      const tenantRes = await fetch("/api/tenant/me");
+      const tenantData = await tenantRes.json();
+      // Paket dari profil tenant adalah sumber utama, fallback ke subscription
+      if (tenantData.success && tenantData.data?.Paket) {
+        setPaket(tenantData.data.Paket);
+      } else if (subData.success && subData.data?.Paket) {
+        setPaket(subData.data.Paket);
+      }
 
       setStats({
         totalSantri: santriData.data?.filter((s: { Status: string }) => s.Status === "Aktif").length || 0,

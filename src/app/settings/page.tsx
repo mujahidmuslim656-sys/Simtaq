@@ -29,10 +29,17 @@ export default function SettingsPage() {
 
   const fetchSubscription = async () => {
     try {
-      const response = await fetch("/api/subscription");
-      const data = await response.json();
-      if (data.success && data.data?.Paket) {
-        setPaket(data.data.Paket);
+      const [subRes, tenantRes] = await Promise.all([
+        fetch("/api/subscription"),
+        fetch("/api/tenant/me"),
+      ]);
+      const subData = await subRes.json();
+      const tenantData = await tenantRes.json();
+      // Paket dari profil tenant adalah sumber utama, fallback ke subscription
+      if (tenantData.success && tenantData.data?.Paket) {
+        setPaket(tenantData.data.Paket);
+      } else if (subData.success && subData.data?.Paket) {
+        setPaket(subData.data.Paket);
       }
     } catch (err) {
       console.error("Failed to fetch subscription:", err);
