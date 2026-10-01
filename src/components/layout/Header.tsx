@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 
@@ -9,6 +10,16 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
+  const [tenantName, setTenantName] = useState("");
+
+  useEffect(() => {
+    // Read tenant_name from cookie
+    const cookies = document.cookie;
+    const match = cookies.match(/tenant_name=([^;]+)/);
+    if (match) {
+      setTenantName(decodeURIComponent(match[1]));
+    }
+  }, []);
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 md:px-6 py-3 sticky top-0 z-30">
@@ -23,6 +34,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </svg>
           </button>
           <Logo size="sm" />
+          {tenantName && (
+            <span className="text-sm font-semibold text-primary-700 hidden sm:inline">
+              {tenantName}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button

@@ -16,6 +16,16 @@ export default function DashboardPage() {
     totalKelas: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [tenantName, setTenantName] = useState("");
+
+  useEffect(() => {
+    // Read tenant_name from cookie
+    const cookies = document.cookie;
+    const match = cookies.match(/tenant_name=([^;]+)/);
+    if (match) {
+      setTenantName(decodeURIComponent(match[1]));
+    }
+  }, []);
 
   useEffect(() => {
     loadStats();
@@ -64,7 +74,9 @@ export default function DashboardPage() {
         <IslamicPattern variant="light" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-900/30 to-transparent" />
         <div className="relative">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Selamat Datang di Simtaq</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            Selamat Datang di {tenantName || "Simtaq"}
+          </h1>
           <p className="text-primary-200 text-sm md:text-base">Kelola data TPQ Anda secara digital dan terpusat</p>
         </div>
       </div>

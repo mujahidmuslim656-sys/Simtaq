@@ -90,6 +90,15 @@ export async function POST(request: NextRequest) {
         path: "/",
       });
 
+      // Set cookie tenant_name (for branding)
+      response.cookies.set("tenant_name", tenant.Nama_TPQ, {
+        httpOnly: false, // Allow client-side access for branding
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+
       return response;
     }
 
