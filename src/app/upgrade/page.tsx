@@ -97,7 +97,7 @@ export default function UpgradePage() {
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-500">Limit Santri</p>
-                <p className="text-lg font-semibold text-gray-900">{tenant?.paket === "pro" ? "100" : "10"}</p>
+                <p className="text-lg font-semibold text-gray-900">{tenant?.paket === "pro" ? "100" : "5"}</p>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function UpgradePage() {
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-gray-900">Paket Pro</h3>
               <div className="flex items-baseline justify-center gap-1 mt-2">
-                <span className="text-4xl font-bold text-primary-600">Rp 49.000</span>
+                <span className="text-4xl font-bold text-primary-600">Rp 99.000</span>
                 <span className="text-gray-500">/bulan</span>
               </div>
             </div>
@@ -129,25 +129,31 @@ export default function UpgradePage() {
                 <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-gray-700">20 guru</span>
+                <span className="text-gray-700">Modul Iuran</span>
               </li>
               <li className="flex items-center gap-3">
                 <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-gray-700">5 kelas</span>
+                <span className="text-gray-700">Export Data Excel</span>
               </li>
               <li className="flex items-center gap-3">
                 <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-gray-700">Semua fitur dasar</span>
+                <span className="text-gray-700">Pengumuman</span>
               </li>
               <li className="flex items-center gap-3">
                 <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-gray-700">Prioritas support</span>
+                <span className="text-gray-700">Charts dashboard lengkap</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-gray-700">Semua fitur dasar + prioritas support</span>
               </li>
             </ul>
 

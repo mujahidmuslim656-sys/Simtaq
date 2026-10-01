@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
+import { isPro } from "@/lib/plan";
+
+async function proOnlyResponse(tenantId: string | null) {
+  if (!(await isPro(tenantId || ""))) {
+    return NextResponse.json(
+      { success: false, message: "Fitur ini hanya tersedia untuk paket Pro" },
+      { status: 403 }
+    );
+  }
+  return null;
+}
 
 export async function GET(request: NextRequest) {
   if (!isTenantAuthenticated(request)) {
@@ -8,6 +19,9 @@ export async function GET(request: NextRequest) {
   }
 
   const tenantId = getTenantId(request);
+
+  const planGate = await proOnlyResponse(tenantId);
+  if (planGate) return planGate;
 
   try {
     const { searchParams } = new URL(request.url);
@@ -35,6 +49,9 @@ export async function POST(request: NextRequest) {
   }
 
   const tenantId = getTenantId(request);
+
+  const planGatePost = await proOnlyResponse(tenantId);
+  if (planGatePost) return planGatePost;
 
   try {
     const data = await request.json();
@@ -70,6 +87,9 @@ export async function PUT(request: NextRequest) {
     return unauthorizedResponse();
   }
 
+  const planGatePut = await proOnlyResponse(getTenantId(request));
+  if (planGatePut) return planGatePut;
+
   try {
     const { id, data } = await request.json();
 
@@ -95,6 +115,9 @@ export async function DELETE(request: NextRequest) {
   if (!isTenantAuthenticated(request)) {
     return unauthorizedResponse();
   }
+
+  const planGateDelete = await proOnlyResponse(getTenantId(request));
+  if (planGateDelete) return planGateDelete;
 
   try {
     const { id } = await request.json();

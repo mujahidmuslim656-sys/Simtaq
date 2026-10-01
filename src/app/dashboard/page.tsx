@@ -136,7 +136,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <DashboardCharts santri={santriList} kelas={kelasList} iuranStats={iuranStats} />
+      <DashboardCharts santri={santriList} kelas={kelasList} iuranStats={iuranStats} paket={paket} />
 
       {/* Quick Actions */}
       <div className="mb-8">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import * as sheets from "@/services/googleSheets";
 import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
+import { isPro } from "@/lib/plan";
 
 // GET - Export data as Excel
 export async function GET(request: NextRequest) {
@@ -10,6 +11,15 @@ export async function GET(request: NextRequest) {
   }
 
   const tenantId = getTenantId(request);
+
+  // Export Excel hanya untuk paket Pro
+  if (!(await isPro(tenantId || ""))) {
+    return NextResponse.json(
+      { success: false, message: "Fitur export Excel hanya tersedia untuk paket Pro" },
+      { status: 403 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const month = searchParams.get("month"); // e.g., "Januari"
   const year = searchParams.get("year"); // e.g., "2024"

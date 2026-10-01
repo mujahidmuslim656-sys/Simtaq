@@ -8,6 +8,7 @@ import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
+import ProGate from "@/components/ProGate";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/Table";
@@ -134,6 +135,7 @@ export default function PengumumanPage() {
         }
       />
 
+      <ProGate feature="Pengumuman">
       <div className="mb-6">
         <div className="relative">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,6 +264,7 @@ export default function PengumumanPage() {
           </div>
         </form>
       </Modal>
+      </ProGate>
     </TenantLayout>
   );
 }

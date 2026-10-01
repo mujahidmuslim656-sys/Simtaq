@@ -6,6 +6,7 @@ import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import PageHeader from "@/components/ui/PageHeader";
+import ProGate from "@/components/ProGate";
 
 const MONTHS = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -107,6 +108,7 @@ export default function ExportPage() {
         subtitle={`Export data ${tenantName || "TPQ"} ke Excel atau PDF`}
       />
 
+      <ProGate feature="Export Data Excel">
       <div className="max-w-2xl">
         <Card title="Pilih Modul">
           <div className="space-y-4">
@@ -202,6 +204,7 @@ export default function ExportPage() {
           </p>
         </div>
       </div>
+      </ProGate>
     </TenantLayout>
   );
 }

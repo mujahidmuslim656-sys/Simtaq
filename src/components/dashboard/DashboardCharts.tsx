@@ -36,11 +36,12 @@ interface DashboardChartsProps {
   santri: SantriRow[];
   kelas: KelasRow[];
   iuranStats: IuranStats | null;
+  paket?: string;
 }
 
 const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4", "#f97316"];
 
-export default function DashboardCharts({ santri, kelas, iuranStats }: DashboardChartsProps) {
+export default function DashboardCharts({ santri, kelas, iuranStats, paket }: DashboardChartsProps) {
   // Santri per kelas
   const kelasMap = new Map(kelas.map((k) => [k.ID_Kelas, k.Nama_Kelas || k.ID_Kelas]));
   const countByKelas = santri.reduce<Record<string, number>>((acc, s) => {
@@ -135,6 +136,7 @@ export default function DashboardCharts({ santri, kelas, iuranStats }: Dashboard
         </div>
       </Card>
 
+      {paket === "pro" && (
       <Card title="Ringkasan Iuran">
         <div className="h-72">
           {iuranStats ? (
@@ -152,6 +154,7 @@ export default function DashboardCharts({ santri, kelas, iuranStats }: Dashboard
           )}
         </div>
       </Card>
+      )}
     </div>
   );
 }

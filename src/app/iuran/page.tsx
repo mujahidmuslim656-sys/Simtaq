@@ -8,6 +8,7 @@ import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
+import ProGate from "@/components/ProGate";
 import StatsCard from "@/components/ui/StatsCard";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
@@ -154,6 +155,7 @@ export default function IuranPage() {
         }
       />
 
+      <ProGate feature="Modul Iuran">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <StatsCard
           title="Total Tagihan"
@@ -327,6 +329,7 @@ export default function IuranPage() {
           </div>
         </form>
       </Modal>
+      </ProGate>
     </TenantLayout>
   );
 }

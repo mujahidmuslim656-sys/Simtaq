@@ -473,7 +473,7 @@ function createTenant(data) {
     data.alamat || "",
     "free",
     "active",
-    10,
+    5,
     now,
     now,
   ];
@@ -532,7 +532,7 @@ function updateTenantPlan(tenantId, paket) {
   }
 
   sheet.getRange(rowIndex, 7).setValue(paket); // Paket
-  sheet.getRange(rowIndex, 9).setValue(paket === "pro" ? 100 : 10); // Max_Santri
+  sheet.getRange(rowIndex, 9).setValue(paket === "pro" ? 100 : 5); // Max_Santri
   sheet.getRange(rowIndex, 11).setValue(new Date().toISOString()); // Updated_At
 
   // Sinkronkan sheet Subscriptions agar tampilan paket konsisten
@@ -739,6 +739,25 @@ function getStudentByToken(token) {
 function createStudent(data) {
   const sheet = getSheet(SHEET_NAMES.SANTRI);
   const headers = HEADERS[SHEET_NAMES.SANTRI];
+
+  // Enforce batas maksimal santri sesuai paket tenant
+  try {
+    const tenantsSheet = getSheet(SHEET_NAMES.TENANTS);
+    const tenants = sheetToJSON(tenantsSheet);
+    const tenant = tenants.find((t) => t.Tenant_ID === data.tenant_id);
+    if (tenant) {
+      const maxSantri = Number(tenant.Max_Santri) || (tenant.Paket === "pro" ? 100 : 5);
+      const currentCount = sheetToJSON(sheet).filter(
+        (s) => s.Tenant_ID === data.tenant_id && s.Status === "Aktif"
+      ).length;
+      if (currentCount >= maxSantri) {
+        return jsonResponse({
+          success: false,
+          message: "Batas maksimal " + maxSantri + " santri untuk paket " + (tenant.Paket === "pro" ? "Pro" : "Free") + ". Upgrade ke Pro untuk menambah lebih banyak.",
+        });
+      }
+    }
+  } catch (e) {}
 
   const id = generateId("SANTRI");
   const token = generateId("token");

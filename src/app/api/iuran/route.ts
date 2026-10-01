@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
+import { isPro } from "@/lib/plan";
 
 export async function GET(request: NextRequest) {
   if (!isTenantAuthenticated(request)) {
@@ -8,6 +9,14 @@ export async function GET(request: NextRequest) {
   }
 
   const tenantId = getTenantId(request);
+
+  // Modul iuran hanya untuk paket Pro
+  if (!(await isPro(tenantId || ""))) {
+    return NextResponse.json(
+      { success: false, message: "Modul iuran hanya tersedia untuk paket Pro" },
+      { status: 403 }
+    );
+  }
 
   try {
     const { searchParams } = new URL(request.url);
@@ -47,6 +56,13 @@ export async function POST(request: NextRequest) {
   }
 
   const tenantId = getTenantId(request);
+
+  if (!(await isPro(tenantId || ""))) {
+    return NextResponse.json(
+      { success: false, message: "Modul iuran hanya tersedia untuk paket Pro" },
+      { status: 403 }
+    );
+  }
 
   try {
     const data = await request.json();
@@ -92,6 +108,14 @@ export async function PUT(request: NextRequest) {
   try {
     const { id, data } = await request.json();
 
+    const tenantId = getTenantId(request);
+    if (!(await isPro(tenantId || ""))) {
+      return NextResponse.json(
+        { success: false, message: "Modul iuran hanya tersedia untuk paket Pro" },
+        { status: 403 }
+      );
+    }
+
     if (!id) {
       return NextResponse.json(
         { success: false, message: "ID diperlukan" },
@@ -117,6 +141,14 @@ export async function DELETE(request: NextRequest) {
 
   try {
     const { id } = await request.json();
+
+    const tenantId = getTenantId(request);
+    if (!(await isPro(tenantId || ""))) {
+      return NextResponse.json(
+        { success: false, message: "Modul iuran hanya tersedia untuk paket Pro" },
+        { status: 403 }
+      );
+    }
 
     if (!id) {
       return NextResponse.json(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as sheets from "@/services/googleSheets";
 import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
+import { getTenantById } from "@/services/tenantService";
 
 // GET - Ambil semua santri (filter by tenant_id)
 export async function GET(request: NextRequest) {
@@ -81,6 +82,21 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+    }
+
+    // Cek batas maksimal santri sesuai paket
+    const tenant = await getTenantById(tenantId || "");
+    const maxSantri = tenant?.Max_Santri || (tenant?.Paket === "pro" ? 100 : 5);
+    const santriList = await sheets.getAllSantri(tenantId || undefined);
+    const activeCount = santriList.filter((s) => s.Status === "Aktif").length;
+    if (activeCount >= maxSantri) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Batas maksimal ${maxSantri} santri untuk paket ${tenant?.Paket === "pro" ? "Pro" : "Free"}. Upgrade ke Pro untuk menambah lebih banyak.`,
+        },
+        { status: 403 }
+      );
     }
 
     const newSantri = await sheets.createSantri({ ...data, tenant_id: tenantId });
