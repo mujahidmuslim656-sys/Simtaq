@@ -14,8 +14,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (!isLoggedIn) {
+    // Check login status via cookie (set by server)
+    const cookies = document.cookie;
+    if (!cookies.includes("isLoggedIn=true")) {
       router.push("/login");
     }
   }, [router]);

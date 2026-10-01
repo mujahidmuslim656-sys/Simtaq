@@ -93,7 +93,7 @@ export default function SantriPage() {
         setFormData(emptyForm);
         loadSantri();
       } else {
-        setError(data.message || "Gagal menyimpan data");
+        setError(data.message || data.error || "Gagal menyimpan data");
       }
     } catch {
       setError("Terjadi kesalahan. Silakan coba lagi.");

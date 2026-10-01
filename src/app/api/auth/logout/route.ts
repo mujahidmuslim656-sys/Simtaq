@@ -10,7 +10,16 @@ export async function POST() {
 
     // Hapus cookie dengan konfigurasi yang sama dengan saat set
     response.cookies.set("isLoggedIn", "", {
-      httpOnly: true, // sama dengan saat set
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
+    // Hapus cookie tenant_id
+    response.cookies.set("tenant_id", "", {
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 0,

@@ -5,6 +5,15 @@ import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import IslamicPattern from "@/components/IslamicPattern";
 
+// Simple SHA-256 hash function for client-side password hashing
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -27,10 +36,16 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      // Hash password before sending
+      const hashedPassword = await hashPassword(formData.password);
+
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          password: hashedPassword,
+        }),
       });
 
       const data = await response.json();

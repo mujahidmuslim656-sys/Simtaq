@@ -26,15 +26,18 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME || "admin";
-      const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123";
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-      if (username === adminUsername && password === adminPassword) {
-        document.cookie = "isAdmin=true; path=/; max-age=" + 60 * 60 * 24 * 7;
-        document.cookie = "isLoggedIn=true; path=/; max-age=" + 60 * 60 * 24 * 7;
+      const data = await response.json();
+
+      if (data.success) {
         router.push("/admin");
       } else {
-        setError("Username atau password admin salah");
+        setError(data.message || "Username atau password admin salah");
       }
     } catch {
       setError("Terjadi kesalahan. Silakan coba lagi.");

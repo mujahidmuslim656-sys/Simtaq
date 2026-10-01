@@ -59,17 +59,8 @@ export default function AdminPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const cookies = document.cookie;
-    if (!cookies.includes("isAdmin=true")) {
-      router.push("/admin/login");
-      return;
-    }
     loadData();
-  };
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -79,6 +70,12 @@ export default function AdminPage() {
         fetch("/api/admin?type=payments"),
         fetch("/api/admin?type=stats"),
       ]);
+
+      // Check if unauthorized
+      if (tenantsRes.status === 403 || tenantsRes.status === 401) {
+        router.push("/admin/login");
+        return;
+      }
 
       const tenantsData = await tenantsRes.json();
       const paymentsData = await paymentsRes.json();
@@ -172,9 +169,12 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogout = () => {
-    document.cookie = "isAdmin=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     router.push("/admin/login");
   };
 

@@ -1,19 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSubscription, getSubscriptionByTenant, createPayment } from "@/services/tenantService";
+import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/auth";
 
 // GET - Get subscription by tenant_id
 export async function GET(request: NextRequest) {
-  try {
-    const tenantId = request.nextUrl.searchParams.get("tenant_id");
+  // Check tenant authentication
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
-    if (!tenantId) {
+  try {
+    const tenantId = getTenantId(request);
+    const paramTenantId = request.nextUrl.searchParams.get("tenant_id");
+
+    // Use tenant_id from cookie, not from query param (security)
+    const targetTenantId = tenantId || paramTenantId;
+
+    if (!targetTenantId) {
       return NextResponse.json(
         { success: false, message: "tenant_id diperlukan" },
         { status: 400 }
       );
     }
 
-    const subscription = await getSubscriptionByTenant(tenantId);
+    const subscription = await getSubscriptionByTenant(targetTenantId);
 
     if (!subscription) {
       return NextResponse.json(
@@ -37,26 +47,49 @@ export async function GET(request: NextRequest) {
 
 // POST - Create subscription (upgrade paket)
 export async function POST(request: NextRequest) {
-  try {
-    const { tenant_id, paket, harga, bukti_transfer } = await request.json();
+  // Check tenant authentication
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
-    if (!tenant_id || !paket || !harga) {
+  const tenantId = getTenantId(request);
+
+  try {
+    const { paket, harga, bukti_transfer } = await request.json();
+
+    if (!paket || !harga) {
       return NextResponse.json(
-        { success: false, message: "tenant_id, paket, dan harga wajib diisi" },
+        { success: false, message: "paket dan harga wajib diisi" },
         { status: 400 }
       );
     }
 
-    // Buat subscription
+    // Validate paket value
+    if (!["free", "pro"].includes(paket)) {
+      return NextResponse.json(
+        { success: false, message: "Paket tidak valid" },
+        { status: 400 }
+      );
+    }
+
+    // Validate harga is a positive number
+    if (typeof harga !== "number" || harga <= 0) {
+      return NextResponse.json(
+        { success: false, message: "Harga harus angka positif" },
+        { status: 400 }
+      );
+    }
+
+    // Use tenant_id from cookie, not from request body (security)
     const subscription = await createSubscription({
-      tenant_id,
+      tenant_id: tenantId!,
       paket,
       harga,
     });
 
     // Buat payment record
     const payment = await createPayment({
-      tenant_id,
+      tenant_id: tenantId!,
       subscription_id: subscription.Subscription_ID,
       jumlah: harga,
       bukti_transfer: bukti_transfer || "",

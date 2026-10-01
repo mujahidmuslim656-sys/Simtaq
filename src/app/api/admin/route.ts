@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllTenants, getAllPayments, verifyPayment, getAdminStats } from "@/services/tenantService";
+import { isAdminAuthenticated, forbiddenResponse } from "@/lib/auth";
 
 // GET - Get all tenants (admin only)
 export async function GET(request: NextRequest) {
+  // Check admin authentication
+  if (!isAdminAuthenticated(request)) {
+    return forbiddenResponse("Akses ditolak. Hanya admin yang dapat mengakses.");
+  }
+
   try {
     const type = request.nextUrl.searchParams.get("type");
 
     if (type === "tenants") {
       const tenants = await getAllTenants();
+      // Filter out sensitive data
+      const safeTenants = tenants.map(({ Password_Hash, ...tenant }) => tenant);
       return NextResponse.json({
         success: true,
-        data: tenants,
+        data: safeTenants,
       });
     }
 
@@ -45,6 +53,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Verify payment (admin only)
 export async function POST(request: NextRequest) {
+  // Check admin authentication
+  if (!isAdminAuthenticated(request)) {
+    return forbiddenResponse("Akses ditolak. Hanya admin yang dapat mengakses.");
+  }
+
   try {
     const { payment_id, approved, verified_by } = await request.json();
 

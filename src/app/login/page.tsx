@@ -5,6 +5,15 @@ import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import IslamicPattern from "@/components/IslamicPattern";
 
+// Simple SHA-256 hash function for client-side password hashing
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -18,10 +27,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // Hash password before sending
+      const hashedPassword = await hashPassword(password);
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: username, password }),
+        body: JSON.stringify({ email: username, password: hashedPassword }),
       });
 
       const data = await response.json();
@@ -62,7 +74,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Username
+                Email
               </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -71,10 +83,10 @@ export default function LoginPage() {
                   </svg>
                 </span>
                 <input
-                  type="text"
+                  type="email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Masukkan username"
+                  placeholder="Masukkan email"
                   required
                   className="w-full pl-10 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
                 />
@@ -126,6 +138,13 @@ export default function LoginPage() {
               )}
             </button>
           </form>
+
+          <p className="text-center text-sm text-gray-500 mt-4">
+            Belum punya akun?{" "}
+            <a href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+              Daftar TPQ
+            </a>
+          </p>
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">

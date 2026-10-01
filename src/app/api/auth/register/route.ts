@@ -31,7 +31,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Buat tenant
+    // Validasi panjang nama
+    if (nama_tpq.length < 3) {
+      return NextResponse.json(
+        { success: false, message: "Nama TPQ minimal 3 karakter" },
+        { status: 400 }
+      );
+    }
+
+    if (nama_penanggung_jawab.length < 3) {
+      return NextResponse.json(
+        { success: false, message: "Nama penanggung jawab minimal 3 karakter" },
+        { status: 400 }
+      );
+    }
+
+    // Buat tenant (password sudah di-hash di client)
     const tenant = await createTenant({
       nama_tpq,
       nama_penanggung_jawab,
