@@ -554,6 +554,9 @@ function updateTenantProfile(tenantId, data) {
   sheet.getRange(rowIndex, 3).setValue(data.Nama_Penanggung_Jawab); // Nama_Penanggung_Jawab
   sheet.getRange(rowIndex, 4).setValue(data.Email); // Email
   sheet.getRange(rowIndex, 6).setValue(data.Alamat); // Alamat
+  if (data.Status) {
+    sheet.getRange(rowIndex, 8).setValue(data.Status); // Status
+  }
   sheet.getRange(rowIndex, 11).setValue(new Date().toISOString()); // Updated_At
 
   const tenant = sheetToJSON(sheet).find((t) => t.Tenant_ID === tenantId);

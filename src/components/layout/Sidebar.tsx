@@ -127,9 +127,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   }, []);
 
   const handleLogout = async () => {
-    document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "tenant_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "tenant_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
     window.location.href = "/login";
   };
 

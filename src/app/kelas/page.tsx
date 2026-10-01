@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -112,7 +112,7 @@ export default function KelasPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Data Kelas"
         subtitle="Kelola kelas dan jadwal TPQ"
@@ -241,6 +241,6 @@ export default function KelasPage() {
           </div>
         </form>
       </Modal>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

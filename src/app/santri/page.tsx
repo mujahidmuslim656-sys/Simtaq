@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -133,7 +133,7 @@ export default function SantriPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Data Santri"
         subtitle="Kelola data santri TPQ Anda"
@@ -291,6 +291,6 @@ export default function SantriPage() {
           </div>
         </form>
       </Modal>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

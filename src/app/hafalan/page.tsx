@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -151,7 +151,7 @@ export default function HafalanPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Hafalan"
         subtitle="Tracking hafalan Al-Quran santri"
@@ -302,6 +302,6 @@ export default function HafalanPage() {
           </div>
         </form>
       </Modal>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

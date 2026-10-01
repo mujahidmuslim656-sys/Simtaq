@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateTenantPlan, getTenantById } from "@/services/tenantService";
+import { updateTenantPlan, updateTenantProfile, getTenantById } from "@/services/tenantService";
 import { isAdminAuthenticated, forbiddenResponse } from "@/lib/auth";
 
 // PUT - Update tenant (admin only)
@@ -35,6 +35,25 @@ export async function PUT(
         );
       }
       await updateTenantPlan(id, data.Paket);
+    }
+
+    // Update profile fields if provided
+    const hasProfileFields =
+      data.Nama_TPQ || data.Nama_Penanggung_Jawab || data.Email || data.Alamat || data.Status;
+    if (hasProfileFields) {
+      const updated = await updateTenantProfile(id, {
+        Nama_TPQ: data.Nama_TPQ || existingTenant.Nama_TPQ,
+        Nama_Penanggung_Jawab: data.Nama_Penanggung_Jawab || existingTenant.Nama_Penanggung_Jawab,
+        Email: data.Email || existingTenant.Email,
+        Alamat: data.Alamat || existingTenant.Alamat,
+        Status: data.Status,
+      });
+      if (!updated) {
+        return NextResponse.json(
+          { success: false, message: "Gagal mengupdate data TPQ" },
+          { status: 500 }
+        );
+      }
     }
 
     return NextResponse.json({

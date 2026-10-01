@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -224,16 +224,16 @@ export default function PerkembanganPage() {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <TenantLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
-      </AdminLayout>
+      </TenantLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <div className="p-4 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6">
           <div>
@@ -459,6 +459,6 @@ export default function PerkembanganPage() {
           </form>
         </Modal>
       </div>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

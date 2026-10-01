@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -143,7 +143,7 @@ export default function IuranPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Iuran"
         subtitle="Kelola pembayaran iuran santri"
@@ -327,6 +327,6 @@ export default function IuranPage() {
           </div>
         </form>
       </Modal>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

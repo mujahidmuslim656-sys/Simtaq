@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -126,7 +126,7 @@ export default function AbsensiPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Absensi"
         subtitle="Catat kehadiran santri per kelas"
@@ -265,6 +265,6 @@ export default function AbsensiPage() {
           <p className="text-gray-500">Pilih kelas dan tanggal untuk mulai mencatat absensi</p>
         </div>
       )}
-    </AdminLayout>
+    </TenantLayout>
   );
 }

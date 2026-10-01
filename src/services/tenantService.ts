@@ -163,6 +163,7 @@ export async function updateTenantProfile(
     Nama_Penanggung_Jawab: string;
     Email: string;
     Alamat: string;
+    Status?: string;
   }
 ): Promise<Tenant | null> {
   const result = await callAppsScript("POST", { action: "updateTenant" }, { tenantId, ...data });

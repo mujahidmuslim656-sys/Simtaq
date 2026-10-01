@@ -42,10 +42,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => {
-              document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-              document.cookie = "tenant_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-              router.push("/login");
+            onClick={async () => {
+              try {
+                await fetch("/api/auth/logout", { method: "POST" });
+              } catch (error) {
+                console.error("Logout error:", error);
+              }
+              window.location.href = "/login";
             }}
             className="text-sm text-gray-600 hover:text-gray-900 px-4 py-2.5 rounded-lg hover:bg-gray-100 transition-colors min-h-[44px] flex items-center gap-2 font-medium"
           >

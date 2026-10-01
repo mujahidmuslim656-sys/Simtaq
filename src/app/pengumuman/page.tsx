@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -123,7 +123,7 @@ export default function PengumumanPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Pengumuman"
         subtitle="Kelola pengumuman untuk santri dan wali"
@@ -262,6 +262,6 @@ export default function PengumumanPage() {
           </div>
         </form>
       </Modal>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

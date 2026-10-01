@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
@@ -42,25 +42,21 @@ export default function SettingsPage() {
   const fetchTenantData = async () => {
     try {
       setFetching(true);
-      // Get tenant data from cookies and API
-      const cookies = document.cookie;
-      const tenantIdMatch = cookies.match(/tenant_id=([^;]+)/);
-      const tenantNameMatch = cookies.match(/tenant_name=([^;]+)/);
+      const response = await fetch("/api/tenant/me");
+      const data = await response.json();
 
-      if (tenantIdMatch) {
-        const tenantId = tenantIdMatch[1];
-        const response = await fetch(`/api/tenant/${tenantId}`);
-        const data = await response.json();
-
-        if (data.success && data.data) {
-          setFormData({
-            Nama_TPQ: data.data.Nama_TPQ || "",
-            Nama_Penanggung_Jawab: data.data.Nama_Penanggung_Jawab || "",
-            Email: data.data.Email || "",
-            Alamat: data.data.Alamat || "",
-          });
-        } else if (tenantNameMatch) {
-          // Fallback to cookie data
+      if (data.success && data.data) {
+        setFormData({
+          Nama_TPQ: data.data.Nama_TPQ || "",
+          Nama_Penanggung_Jawab: data.data.Nama_Penanggung_Jawab || "",
+          Email: data.data.Email || "",
+          Alamat: data.data.Alamat || "",
+        });
+      } else {
+        // Fallback to tenant_name cookie
+        const cookies = document.cookie;
+        const tenantNameMatch = cookies.match(/tenant_name=([^;]+)/);
+        if (tenantNameMatch) {
           setFormData((prev) => ({
             ...prev,
             Nama_TPQ: decodeURIComponent(tenantNameMatch[1]),
@@ -81,10 +77,6 @@ export default function SettingsPage() {
     setSuccess("");
 
     try {
-      const cookies = document.cookie;
-      const tenantIdMatch = cookies.match(/tenant_id=([^;]+)/);
-      const tenantId = tenantIdMatch ? tenantIdMatch[1] : "";
-
       const response = await fetch("/api/tenant/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -111,16 +103,16 @@ export default function SettingsPage() {
 
   if (fetching) {
     return (
-      <AdminLayout>
+      <TenantLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
-      </AdminLayout>
+      </TenantLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Pengaturan Profil"
         subtitle="Kelola informasi TPQ Anda"
@@ -216,6 +208,6 @@ export default function SettingsPage() {
           </div>
         </Card>
       </div>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

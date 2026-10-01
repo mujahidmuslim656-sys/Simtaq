@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import PageHeader from "@/components/ui/PageHeader";
@@ -101,7 +101,7 @@ export default function ExportPage() {
   };
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       <PageHeader
         title="Export Data"
         subtitle={`Export data ${tenantName || "TPQ"} ke Excel atau PDF`}
@@ -202,6 +202,6 @@ export default function ExportPage() {
           </p>
         </div>
       </div>
-    </AdminLayout>
+    </TenantLayout>
   );
 }

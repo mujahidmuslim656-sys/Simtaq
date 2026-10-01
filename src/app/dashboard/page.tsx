@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import AdminLayout from "@/components/layout/AdminLayout";
+import TenantLayout from "@/components/layout/TenantLayout";
 import StatsCard from "@/components/ui/StatsCard";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -72,16 +72,16 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <TenantLayout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
-      </AdminLayout>
+      </TenantLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <TenantLayout>
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-primary-700 via-primary-800 to-primary-900 rounded-2xl p-6 md:p-8 mb-6 overflow-hidden">
         <IslamicPattern variant="light" />
@@ -274,6 +274,6 @@ export default function DashboardPage() {
           )}
         </div>
       </Card>
-    </AdminLayout>
+    </TenantLayout>
   );
 }
