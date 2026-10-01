@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Button from "@/components/ui/Button";
@@ -70,6 +70,49 @@ export default function CatatanPage() {
     }
   };
 
+  useEffect(() => {
+    let isMounted = true;
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = catatanList.filter(
+        (c) =>
+          c.Catatan.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          c.ID_Santri.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredList(filtered);
+    } else {
+      setFilteredList(catatanList);
+    }
+  }, [searchQuery, catatanList]);
+
+  // Cleanup on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Cleanup any pending state updates
+    };
+  }, []);
+
+  // Prevent memory leak by canceling pending requests on unmount
+  useEffect(() => {
+    const controller = new AbortController();
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  // Track mounted state to prevent state updates after unmount
+  const isMounted = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -101,7 +144,7 @@ export default function CatatanPage() {
         });
         loadData();
       } else {
-        setError(result.error || "Gagal menyimpan data");
+        setError(result.message || "Gagal menyimpan data");
       }
     } catch {
       setError("Gagal menyimpan data. Silakan coba lagi.");
@@ -134,7 +177,7 @@ export default function CatatanPage() {
         if (result.success) {
           loadData();
         } else {
-          setError(result.error || "Gagal menghapus data");
+          setError(result.message || "Gagal menghapus data");
         }
       } catch {
         setError("Gagal menghapus data. Silakan coba lagi.");

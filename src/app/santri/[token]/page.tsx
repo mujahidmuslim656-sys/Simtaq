@@ -23,7 +23,21 @@ export default function ParentPortalPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    loadData();
+    let isMounted = true;
+    const loadDataAsync = async () => {
+      try {
+        setLoading(true);
+        await loadData();
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+    loadDataAsync();
+    return () => {
+      isMounted = false;
+    };
   }, [token]);
 
   const loadData = async () => {

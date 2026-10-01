@@ -4,20 +4,19 @@ import { isTenantAuthenticated, getTenantId, unauthorizedResponse } from "@/lib/
 
 // GET - Ambil semua santri (filter by tenant_id)
 export async function GET(request: NextRequest) {
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
+
+  const tenantId = getTenantId(request);
+
   try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-    const santri = await sheets.getAllSantri(tenantId);
+    const santri = await sheets.getAllSantri(tenantId || undefined);
     return NextResponse.json({ success: true, data: santri });
   } catch (error) {
     console.error("Get santri error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal memuat data santri" },
+      { success: false, message: "Gagal memuat data santri" },
       { status: 500 }
     );
   }
@@ -25,7 +24,6 @@ export async function GET(request: NextRequest) {
 
 // POST - Tambah santri baru
 export async function POST(request: NextRequest) {
-  // Check tenant authentication
   if (!isTenantAuthenticated(request)) {
     return unauthorizedResponse();
   }
@@ -98,21 +96,34 @@ export async function POST(request: NextRequest) {
 
 // PUT - Update santri
 export async function PUT(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const { id, data } = await request.json();
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "ID santri diperlukan" },
+        { success: false, message: "ID santri diperlukan" },
         { status: 400 }
+      );
+    }
+
+    // Verify santri exists and belongs to tenant
+    const existing = await sheets.getSantriById(id);
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: "Santri tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+    if (existing.Tenant_ID && existing.Tenant_ID !== tenantId) {
+      return NextResponse.json(
+        { success: false, message: "Akses ditolak" },
+        { status: 403 }
       );
     }
 
@@ -121,7 +132,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Update santri error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal mengupdate santri" },
+      { success: false, message: "Gagal mengupdate santri" },
       { status: 500 }
     );
   }
@@ -129,30 +140,43 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Nonaktifkan santri
 export async function DELETE(request: NextRequest) {
-  try {
-    const tenantId = request.cookies.get("tenant_id")?.value;
-    if (!tenantId) {
-      return NextResponse.json(
-        { success: false, error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
+  if (!isTenantAuthenticated(request)) {
+    return unauthorizedResponse();
+  }
 
+  const tenantId = getTenantId(request);
+
+  try {
     const { id } = await request.json();
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "ID santri diperlukan" },
+        { success: false, message: "ID santri diperlukan" },
         { status: 400 }
       );
     }
 
+    // Verify santri exists and belongs to tenant
+    const existing = await sheets.getSantriById(id);
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: "Santri tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+    if (existing.Tenant_ID && existing.Tenant_ID !== tenantId) {
+      return NextResponse.json(
+        { success: false, message: "Akses ditolak" },
+        { status: 403 }
+      );
+    }
+
     await sheets.deactivateSantri(id);
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: "Santri berhasil dinonaktifkan" });
   } catch (error) {
     console.error("Deactivate santri error:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menonaktifkan santri" },
+      { success: false, message: "Gagal menonaktifkan santri" },
       { status: 500 }
     );
   }

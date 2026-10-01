@@ -32,6 +32,7 @@ export default function AbsensiPage() {
   const [existingAbsensi, setExistingAbsensi] = useState<Absensi[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadInitialData();
@@ -56,6 +57,7 @@ export default function AbsensiPage() {
       if (santriData.success) setSantriList(santriData.data || []);
     } catch (err) {
       console.error("Failed to load initial data:", err);
+      setError("Gagal memuat data. Silakan refresh halaman.");
     } finally {
       setLoading(false);
     }
@@ -252,7 +254,13 @@ export default function AbsensiPage() {
         </>
       )}
 
-      {!selectedKelas && (
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {!selectedKelas && !error && (
         <div className="text-center py-12">
           <p className="text-gray-500">Pilih kelas dan tanggal untuk mulai mencatat absensi</p>
         </div>

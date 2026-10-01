@@ -13,6 +13,7 @@ export interface Santri {
   ID_Kelas: string;
   Status: "Aktif" | "Nonaktif";
   Access_Token: string;
+  Tenant_ID?: string;
   Created_At: string;
   Updated_At: string;
 }
@@ -23,6 +24,7 @@ export interface Guru {
   No_WA: string;
   Email: string;
   Status: "Aktif" | "Nonaktif";
+  Tenant_ID?: string;
   Created_At: string;
 }
 
@@ -33,6 +35,7 @@ export interface Kelas {
   Hari: string;
   Jam: string;
   Status: "Aktif" | "Nonaktif";
+  Tenant_ID?: string;
 }
 
 export interface Absensi {

@@ -12,8 +12,6 @@
     "enabled": true
   },
   "vars": {
-    "ADMIN_USERNAME": "admin",
-    "ADMIN_PASSWORD": "admin123",
     "GOOGLE_APPS_SCRIPT_URL": "https://script.google.com/macros/s/AKfycbzkryA6XHICLd0ohOBQ6Nd5LMV72hzUivJj4e4OYduW58hvz8IwfQSqPJQhe6J9rzU3Mg/exec",
     "NEXT_PUBLIC_APP_URL": "https://simtaq.mujahidmuslim656.workers.dev"
   }

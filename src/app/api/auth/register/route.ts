@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createTenant } from "@/services/tenantService";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 // POST - Registrasi TPQ baru
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const rateLimit = checkRateLimit(`register:${ip}`, 5, 15 * 60 * 1000); // 5 attempts per 15 minutes
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { success: false, message: "Terlalu banyak percobaan registrasi. Silakan coba lagi dalam 15 menit." },
+        { status: 429 }
+      );
+    }
+
     const { nama_tpq, nama_penanggung_jawab, email, password, alamat } = await request.json();
 
     // Validasi input

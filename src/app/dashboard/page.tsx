@@ -39,7 +39,8 @@ export default function DashboardPage() {
         totalGuru: guruData.data?.length || 0,
         totalKelas: kelasData.data?.length || 0,
       });
-    } catch {
+    } catch (error) {
+      console.error("Failed to load stats:", error);
       setStats({ totalSantri: 0, totalGuru: 0, totalKelas: 0 });
     } finally {
       setLoading(false);

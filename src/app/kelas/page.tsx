@@ -29,7 +29,7 @@ export default function KelasPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingKelas, setEditingKelas] = useState<Kelas | null>(null);
-  const [formData, setFormData] = useState<KelasFormData>({ ...emptyForm, Status: "" as "Aktif" | "Nonaktif" });
+  const [formData, setFormData] = useState<KelasFormData>({ ...emptyForm });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -61,6 +61,7 @@ export default function KelasPage() {
       }
     } catch (err) {
       console.error("Failed to load kelas:", err);
+      setError("Gagal memuat data kelas");
     } finally {
       setLoading(false);
     }
@@ -190,7 +191,20 @@ export default function KelasPage() {
         ))}
       </div>
 
-      {filteredList.length === 0 && !loading && (
+      {loading && (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="text-gray-500 mt-2">Memuat data...</p>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {filteredList.length === 0 && !loading && !error && (
         <div className="text-center py-12">
           <p className="text-gray-500">Tidak ada data kelas</p>
         </div>

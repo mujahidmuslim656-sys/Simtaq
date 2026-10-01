@@ -60,6 +60,7 @@ export default function PengumumanPage() {
       }
     } catch (err) {
       console.error("Failed to load data:", err);
+      setError("Gagal memuat data pengumuman");
     } finally {
       setLoading(false);
     }
@@ -201,7 +202,20 @@ export default function PengumumanPage() {
         ))}
       </div>
 
-      {filteredList.length === 0 && !loading && (
+      {loading && (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="text-gray-500 mt-2">Memuat data...</p>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      {filteredList.length === 0 && !loading && !error && (
         <div className="text-center py-12">
           <p className="text-gray-500">Tidak ada pengumuman</p>
         </div>
