@@ -114,11 +114,11 @@ export default function KelasPage() {
   return (
     <TenantLayout>
       <PageHeader
-        title="Data Kelas"
-        subtitle="Kelola kelas dan jadwal TPQ"
+        title="Data Kelas/Jilid"
+        subtitle="Kelola kelas/jilid dan jadwal TPQ"
         action={
           <Button variant="gold" onClick={() => { setEditingKelas(null); setFormData(emptyForm); setIsModalOpen(true); }}>
-            + Tambah Kelas
+            + Tambah Kelas/Jilid
           </Button>
         }
       />
@@ -130,7 +130,7 @@ export default function KelasPage() {
           </svg>
           <input
             type="text"
-            placeholder="Cari kelas (nama atau hari)..."
+            placeholder="Cari kelas/jilid (nama atau hari)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-3 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
@@ -142,7 +142,7 @@ export default function KelasPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nama Kelas</TableHead>
+              <TableHead>Kelas/Jilid</TableHead>
               <TableHead>Guru</TableHead>
               <TableHead>Hari</TableHead>
               <TableHead>Jam</TableHead>
@@ -213,10 +213,19 @@ export default function KelasPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingKelas(null); }}
-        title={editingKelas ? "Edit Kelas" : "Tambah Kelas"}
+        title={editingKelas ? "Edit Kelas/Jilid" : "Tambah Kelas/Jilid"}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Nama Kelas" value={formData.Nama_Kelas} onChange={(e) => setFormData({ ...formData, Nama_Kelas: e.target.value })} required />
+          <Select label="Kelas/Jilid" value={formData.Nama_Kelas} onChange={(e) => setFormData({ ...formData, Nama_Kelas: e.target.value })}>
+            <option value="">Pilih Kelas/Jilid</option>
+            <option value="Jilid 1">Jilid 1</option>
+            <option value="Jilid 2">Jilid 2</option>
+            <option value="Jilid 3">Jilid 3</option>
+            <option value="Jilid 4">Jilid 4</option>
+            <option value="Jilid 5">Jilid 5</option>
+            <option value="Jilid 6">Jilid 6</option>
+            <option value="Al-Quran">Al-Quran</option>
+          </Select>
           <Input label="ID Guru" value={formData.ID_Guru} onChange={(e) => setFormData({ ...formData, ID_Guru: e.target.value })} />
           <Input label="Hari" value={formData.Hari} onChange={(e) => setFormData({ ...formData, Hari: e.target.value })} />
           <Input label="Jam" value={formData.Jam} onChange={(e) => setFormData({ ...formData, Jam: e.target.value })} />
@@ -236,7 +245,7 @@ export default function KelasPage() {
               Batal
             </Button>
             <Button type="submit" variant="gold" className="flex-1" loading={saving}>
-              {editingKelas ? "Simpan Perubahan" : "Tambah Kelas"}
+              {editingKelas ? "Simpan Perubahan" : "Tambah Kelas/Jilid"}
             </Button>
           </div>
         </form>

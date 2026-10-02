@@ -132,6 +132,9 @@ export default function SantriPage() {
     }
   };
 
+  const listLaki = filteredList.filter((s) => s.Jenis_Kelamin !== "P");
+  const listPerempuan = filteredList.filter((s) => s.Jenis_Kelamin === "P");
+
   return (
     <TenantLayout>
       <PageHeader
@@ -160,25 +163,24 @@ export default function SantriPage() {
         </div>
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden md:block">
+      {/* Desktop Table - Laki-laki */}
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">Laki-laki ({listLaki.length})</h2>
+      <div className="hidden md:block mb-8">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>NIS</TableHead>
               <TableHead>Nama</TableHead>
-              <TableHead>L/P</TableHead>
-              <TableHead>Kelas</TableHead>
+              <TableHead>Kelas/Jilid</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredList.map((santri, index) => (
-              <TableRow key={santri.ID_Santri || `santri-${index}`}>
+            {listLaki.map((santri, index) => (
+              <TableRow key={santri.ID_Santri || `laki-${index}`}>
                 <TableCell>{santri.NIS}</TableCell>
                 <TableCell className="font-medium">{santri.Nama}</TableCell>
-                <TableCell>{santri.Jenis_Kelamin}</TableCell>
                 <TableCell>{santri.ID_Kelas || "-"}</TableCell>
                 <TableCell>
                   <Badge variant={santri.Status === "Aktif" ? "success" : "default"}>
@@ -201,10 +203,10 @@ export default function SantriPage() {
         </Table>
       </div>
 
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {filteredList.map((santri, index) => (
-          <div key={santri.ID_Santri || `santri-mobile-${index}`} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      {/* Mobile Cards - Laki-laki */}
+      <div className="md:hidden space-y-4 mb-8">
+        {listLaki.map((santri, index) => (
+          <div key={santri.ID_Santri || `laki-mobile-${index}`} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <h3 className="font-semibold text-gray-900">{santri.Nama}</h3>
@@ -215,8 +217,76 @@ export default function SantriPage() {
               </Badge>
             </div>
             <div className="space-y-1 text-sm text-gray-600 mb-4">
-              <p><span className="font-medium">L/P:</span> {santri.Jenis_Kelamin}</p>
-              <p><span className="font-medium">Kelas:</span> {santri.ID_Kelas || "-"}</p>
+              <p><span className="font-medium">Kelas/Jilid:</span> {santri.ID_Kelas || "-"}</p>
+              <p><span className="font-medium">Wali:</span> {santri.Nama_Wali || "-"}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="secondary" className="flex-1" onClick={() => handleEdit(santri)}>
+                Edit
+              </Button>
+              <Button size="sm" variant="danger" className="flex-1" onClick={() => handleDeactivate(santri.ID_Santri)}>
+                Nonaktifkan
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">Perempuan ({listPerempuan.length})</h2>
+      {/* Desktop Table - Perempuan */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>NIS</TableHead>
+              <TableHead>Nama</TableHead>
+              <TableHead>Kelas/Jilid</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Aksi</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {listPerempuan.map((santri, index) => (
+              <TableRow key={santri.ID_Santri || `prm-${index}`}>
+                <TableCell>{santri.NIS}</TableCell>
+                <TableCell className="font-medium">{santri.Nama}</TableCell>
+                <TableCell>{santri.ID_Kelas || "-"}</TableCell>
+                <TableCell>
+                  <Badge variant={santri.Status === "Aktif" ? "success" : "default"}>
+                    {santri.Status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => handleEdit(santri)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDeactivate(santri.ID_Santri)}>
+                      Nonaktifkan
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile Cards - Perempuan */}
+      <div className="md:hidden space-y-4">
+        {listPerempuan.map((santri, index) => (
+          <div key={santri.ID_Santri || `prm-mobile-${index}`} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="font-semibold text-gray-900">{santri.Nama}</h3>
+                <p className="text-sm text-gray-500">NIS: {santri.NIS || "-"}</p>
+              </div>
+              <Badge variant={santri.Status === "Aktif" ? "success" : "default"}>
+                {santri.Status}
+              </Badge>
+            </div>
+            <div className="space-y-1 text-sm text-gray-600 mb-4">
+              <p><span className="font-medium">Kelas/Jilid:</span> {santri.ID_Kelas || "-"}</p>
               <p><span className="font-medium">Wali:</span> {santri.Nama_Wali || "-"}</p>
             </div>
             <div className="flex gap-2">
@@ -268,7 +338,7 @@ export default function SantriPage() {
             <Input label="Tanggal Lahir" type="date" value={formData.Tanggal_Lahir} onChange={(e) => setFormData({ ...formData, Tanggal_Lahir: e.target.value })} />
             <Input label="Nama Wali" value={formData.Nama_Wali} onChange={(e) => setFormData({ ...formData, Nama_Wali: e.target.value })} />
             <Input label="No. WhatsApp" value={formData.No_WA} onChange={(e) => setFormData({ ...formData, No_WA: e.target.value })} />
-            <Input label="ID Kelas" value={formData.ID_Kelas} onChange={(e) => setFormData({ ...formData, ID_Kelas: e.target.value })} />
+            <Input label="Kelas/Jilid" value={formData.ID_Kelas} onChange={(e) => setFormData({ ...formData, ID_Kelas: e.target.value })} />
             <Select label="Status" value={formData.Status} onChange={(e) => setFormData({ ...formData, Status: e.target.value })}>
               <option value="Aktif">Aktif</option>
               <option value="Nonaktif">Nonaktif</option>

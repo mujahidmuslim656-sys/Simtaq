@@ -159,7 +159,18 @@ export default function UpgradePage() {
 
             <div className="bg-gold-50 border border-gold-200 rounded-lg p-4 mb-4">
               <p className="text-sm text-gold-800">
-                <strong>Cara Pembayaran:</strong> Transfer ke rekening BCA 1234567890 a.n. TPQ Digital, lalu upload bukti transfer.
+                <strong>Cara Pembayaran:</strong> Transfer ke rekening BNI{" "}
+                <span id="norek" className="font-semibold">1234567890</span> a.n. TPQ Digital, lalu upload bukti transfer.{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText("1234567890");
+                    alert("Nomor rekening disalin");
+                  }}
+                  className="ml-2 px-2 py-0.5 text-xs bg-gold-500 text-white rounded hover:bg-gold-600"
+                >
+                  Salin
+                </button>
               </p>
             </div>
 

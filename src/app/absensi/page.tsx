@@ -25,9 +25,7 @@ export default function AbsensiPage() {
   const [kelasList, setKelasList] = useState<Kelas[]>([]);
   const [santriList, setSantriList] = useState<Santri[]>([]);
   const [selectedKelas, setSelectedKelas] = useState("");
-  const [selectedTanggal, setSelectedTanggal] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [selectedTanggal, setSelectedTanggal] = useState("");
   const [absensiForm, setAbsensiForm] = useState<AbsensiForm[]>([]);
   const [existingAbsensi, setExistingAbsensi] = useState<Absensi[]>([]);
   const [loading, setLoading] = useState(false);
@@ -129,18 +127,18 @@ export default function AbsensiPage() {
     <TenantLayout>
       <PageHeader
         title="Absensi"
-        subtitle="Catat kehadiran santri per kelas"
+        subtitle="Catat kehadiran santri per kelas/jilid"
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Kelas</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Kelas/Jilid</label>
           <select
             value={selectedKelas}
             onChange={(e) => setSelectedKelas(e.target.value)}
             className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
           >
-            <option value="">Pilih Kelas</option>
+            <option value="">Pilih Kelas/Jilid</option>
             {kelasList.map((k) => (
               <option key={k.ID_Kelas} value={k.ID_Kelas}>{k.Nama_Kelas}</option>
             ))}
@@ -148,12 +146,21 @@ export default function AbsensiPage() {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Tanggal</label>
-          <input
-            type="date"
-            value={selectedTanggal}
-            onChange={(e) => setSelectedTanggal(e.target.value)}
-            className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-          />
+          <div className="flex gap-2">
+            <input
+              type="date"
+              value={selectedTanggal}
+              onChange={(e) => setSelectedTanggal(e.target.value)}
+              className="flex-1 px-4 py-3 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+            />
+            <button
+              type="button"
+              onClick={() => setSelectedTanggal(new Date().toISOString().split("T")[0])}
+              className="px-4 py-3 text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-xl transition-colors whitespace-nowrap"
+            >
+              Hari Ini
+            </button>
+          </div>
         </div>
       </div>
 
@@ -260,7 +267,7 @@ export default function AbsensiPage() {
         </div>
       )}
 
-      {!selectedKelas && !error && (
+      {(!selectedKelas || !selectedTanggal) && !error && (
         <div className="text-center py-12">
           <p className="text-gray-500">Pilih kelas dan tanggal untuk mulai mencatat absensi</p>
         </div>

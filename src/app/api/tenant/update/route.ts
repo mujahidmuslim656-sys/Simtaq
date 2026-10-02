@@ -95,7 +95,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error("Update tenant error:", error);
     return NextResponse.json(
-      { success: false, message: "Gagal mengupdate profil" },
+      { success: false, message: error instanceof Error ? error.message : "Gagal mengupdate profil" },
       { status: 500 }
     );
   }

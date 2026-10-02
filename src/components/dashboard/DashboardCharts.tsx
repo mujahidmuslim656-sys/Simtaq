@@ -78,7 +78,7 @@ export default function DashboardCharts({ santri, kelas, iuranStats, paket }: Da
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
-      <Card title="Santri per Kelas">
+      <Card title="Santri per Kelas/Jilid">
         <div className="h-72">
           {santriPerKelas.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">

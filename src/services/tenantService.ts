@@ -170,7 +170,7 @@ export async function updateTenantProfile(
   if (result.success) {
     return (result.data as Tenant) || null;
   }
-  return null;
+  throw new Error((result as { message?: string }).message || result.error || "Gagal mengupdate profil");
 }
 
 // ============================================

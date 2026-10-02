@@ -48,7 +48,7 @@ export async function PUT(
         Alamat: data.Alamat || existingTenant.Alamat,
         Status: data.Status,
       });
-      if (!updated) {
+      if (updated === null) {
         return NextResponse.json(
           { success: false, message: "Gagal mengupdate data TPQ" },
           { status: 500 }
@@ -63,7 +63,7 @@ export async function PUT(
   } catch (error) {
     console.error("Update tenant error:", error);
     return NextResponse.json(
-      { success: false, message: "Gagal mengupdate tenant" },
+      { success: false, message: error instanceof Error ? error.message : "Gagal mengupdate tenant" },
       { status: 500 }
     );
   }
